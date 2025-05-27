@@ -10,6 +10,10 @@ ENV PYTHONUNBUFFERED=1 \
 WORKDIR /app
 
 COPY requirements.txt .
+
+# Install build dependencies for matplotlib
+RUN apk add --no-cache build-base gfortran python3-dev freetype-dev libpng-dev jpeg-dev musl-dev zlib-dev openblas-dev
+
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
