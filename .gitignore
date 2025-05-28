@@ -131,6 +131,13 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
+# Environment variables
+.env
+.env.*
+
+# Ignore docker-compose.override.yml for local development
+docker-compose.override.yml
+
 # Environments
 .env
 .venv

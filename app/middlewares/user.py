@@ -31,7 +31,7 @@ class UserMiddleware(BaseMiddleware):
             return
 
         referral.invited += 1
-        if referral.invited % 5 != 0:
+        if referral.invited % 3 != 0:
             return
 
         referral.add_vip(1)
@@ -39,7 +39,7 @@ class UserMiddleware(BaseMiddleware):
         with suppress(TelegramAPIError):
             await bot.send_message(
                 referral.id,
-                '<i><b>По вашей ссылке перешло 5 человек. Вам начислена VIP-подписка 🥰</></>',
+                '<i><b>По вашей ссылке перешло 3 человека. Вам начислена VIP-подписка 🥰</></>',
             )
 
     async def __call__(
