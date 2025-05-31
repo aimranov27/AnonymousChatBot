@@ -373,12 +373,12 @@ async def view_complaint(
     await state.clear()
 
     if not user.partner:
-        return await message.answer('Диалог уже завершен.')
+        return await message.answer('Çat artıq dayandırılmışdır.')
 
     second_user = await session.get(User, user.partner_id)
 
     if not second_user:
-        await message.answer('Диалог уже завершен.')
+        await message.answer('Çat artıq dayandırılmışdır.')
         return
 
     await message.answer(
@@ -394,15 +394,15 @@ async def complaint(
     """Complaint"""
 
     if not user.partner:
-        return await call.message.edit_text('Диалог уже завершен.')
+        return await call.message.edit_text('Çat artıq dayandırılmışdır.')
 
     second_user = await session.get(User, user.partner_id)
 
     if not second_user:
-        await call.message.edit_text('Диалог уже завершен.')
+        await call.message.edit_text('Çat artıq dayandırılmışdır.')
         return
 
-    await call.message.edit_text('❗️ Жалоба отправлена.')
+    await call.message.edit_text('❗️ Şikayət göndərildi.')
 
     for moder in config.bot.moders:
         with suppress(TelegramAPIError):
@@ -425,16 +425,16 @@ async def decline_complaint(
 ) -> None:
     """Decline complaint"""
     if not user.partner:
-        await call.message.edit_text('Диалог уже завершен.')
+        await call.message.edit_text('Çat artıq dayandırılmışdır.')
         return await session.commit()
 
     second_user = await session.get(User, user.partner_id)
 
     if not second_user:
-        await call.message.edit_text('Диалог уже завершен.')
+        await call.message.edit_text('Çat artıq dayandırılmışdır.')
         return
 
-    await call.message.edit_text('❗️ Жалоба отменена.')
+    await call.message.edit_text('❗️ Şikayət ləğv olundu.')
 
 
 async def pre_show_contacts(message: types.Message, user: User) -> None:
@@ -585,14 +585,14 @@ async def next(
 
 def register(router: Router) -> None:
     """Register handlers"""
-    router.message.register(random_normal, Text('Случайный диалог 🔍'))
-    router.message.register(male_normal, Text('Поиск М 👨'))
-    router.message.register(female_normal, Text('Поиск Ж 👩'))
-    router.message.register(pre_adult, Text('Пошлый чат 🔞'))
+    router.message.register(random_normal, Text('Şans dialoqu 🔍'))
+    router.message.register(male_normal, Text('K axtar 👨'))
+    router.message.register(female_normal, Text('Q axtar 👩'))
+    router.message.register(pre_adult, Text('18+ çat 🔞'))
     router.callback_query.register(adult, Text(startswith='adult:'))
     router.message.register(next, Command('next'))
     router.message.register(finish_dialogue, Command('stop'))
-    router.message.register(finish_dialogue, Text('Завершить диалог 🚫'))
+    router.message.register(finish_dialogue, Text('Söhbəti bitir 🚫'))
     router.message.register(add_friend_request, Text('Добавить в друзья 👥'))
     router.callback_query.register(
         accept_friend_request, Text('accept:friend')
@@ -602,7 +602,7 @@ def register(router: Router) -> None:
     )
     router.message.register(pre_show_contacts, Text('Показать контакты 📱'))
     router.callback_query.register(show_contacts, Text('show:contacts'))
-    router.message.register(pre_complaint, Text('Пожаловаться 💬'))
+    router.message.register(pre_complaint, Text('Şikayət et 💬'))
     router.message.register(view_complaint, StateFilter('dialogue.complaint'))
     router.callback_query.register(complaint, Text('accept:complaint'))
     router.callback_query.register(

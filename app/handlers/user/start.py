@@ -31,7 +31,7 @@ async def start(
     if user.is_man is None:
         await state.set_state('start')
         await message.answer(
-            '<i><b>Добро пожаловать в анонимный чат! Выбери свой пол:</></>',
+            '<i><b>Anonim söhbətə xoş gəlmisiniz! Cinsinizi seçin:</></>',
             reply_markup=nav.inline.GENDER,
         )
 
@@ -59,7 +59,7 @@ async def pre_reg(message: types.Message, state: FSMContext) -> None:
     """Pre registration"""
     await state.set_state('start')
     await message.answer(
-        '<i><b>Добро пожаловать в анонимный чат! Выбери свой пол:</></>',
+        '<i><b>Anonim söhbətə xoş gəlmisiniz! Cinsinizi seçin:</></>',
         reply_markup=nav.inline.GENDER,
     )
 

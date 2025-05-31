@@ -44,13 +44,13 @@ def bill(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text='Оплатить 🔗',
+                    text='Ödəniş 🔗',
                     url=bill.url,
                 ),
             ],
             [
                 InlineKeyboardButton(
-                    text='Проверить ✅',
+                    text='Yoxla ✅',
                     callback_data='check:%s:%i:%s' % (
                         'vip' if is_vip else 'profile',
                         bill.id, item_id,
@@ -59,7 +59,7 @@ def bill(
             ],
             [
                 InlineKeyboardButton(
-                    text='Назад 🔙',
+                    text='Geri 🔙',
                     callback_data='back:vip' if is_vip else 'back:profile',
                 ),
             ],
@@ -85,7 +85,7 @@ def choose_bill(item_id) -> InlineKeyboardMarkup:
             ],
             [
                 InlineKeyboardButton(
-                    text='Назад 🔙',
+                    text='Geri 🔙',
                     callback_data='back:vip',
                 ),
             ],
@@ -99,13 +99,13 @@ def confirm_buy_balance(item_id) -> InlineKeyboardMarkup:
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text='Подтвердить✅',
+                    text='Təsdiq et✅',
                     callback_data='accept:buy:balance:%s' % item_id,
                 ),
             ],
             [
                 InlineKeyboardButton(
-                    text='Назад 🔙',
+                    text='Geri 🔙',
                     callback_data='back:vip',
                 ),
             ],
@@ -125,7 +125,7 @@ BUY = InlineKeyboardMarkup(
         ),
         [
             InlineKeyboardButton(
-                text='Получить бесплатно 🤫',
+                text='Pulsuz əldə et 🤫',
                 callback_data='ref',
             ),
         ],
@@ -136,11 +136,11 @@ ADULT_GENDER = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(
-                text='Муж. ♂️',
+                text='Kişi ♂️',
                 callback_data='adult:male',
             ),
             InlineKeyboardButton(
-                text='Жен. ♀️',
+                text='Qadın ♀️',
                 callback_data='adult:female',
             ),
         ]
@@ -151,7 +151,7 @@ BACK_VIP = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(
-                text='Назад 🔙',
+                text='Geri 🔙',
                 callback_data='back:vip',
             ),
         ],
@@ -162,19 +162,19 @@ PROFILE = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(
-                text='Изменить пол👩‍❤️‍👨',
+                text='Cinsi dəyiş👩‍❤️‍👨',
                 callback_data='edit:gender',
             ),
         ],
         [
             InlineKeyboardButton(
-                text='Изменить возраст📝',
+                text='Yaşı dəyiş📝',
                 callback_data='edit:age',
             ),
         ],
         [
             InlineKeyboardButton(
-                text='Пополнить баланс💰',
+                text='Balansı artır💰',
                 callback_data='add:balance',
             ),
         ],
@@ -184,11 +184,11 @@ GENDER = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(
-                text='Парень🙋‍♂',
+                text='Kişi🙋‍♂',
                 callback_data='gender:1',
             ),
             InlineKeyboardButton(
-                text='Девушка🙎‍♀',
+                text='Qadın🙎‍♀',
                 callback_data='gender:0',
             ),
         ],
@@ -227,13 +227,13 @@ COMPLAINT = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(
-                text='Отправить✅',
+                text='Göndər✅',
                 callback_data='accept:complaint',
             ),
         ],
         [
             InlineKeyboardButton(
-                text='Отменить❌',
+                text='Ləğv et❌',
                 callback_data='decline:complaint',
             ),
         ],
@@ -273,60 +273,60 @@ def change_nickname(new_nickname: dict) -> InlineKeyboardMarkup:
     )
 
 
-def friends(friends_list: dict) -> InlineKeyboardMarkup:
-    """Friends keyboard"""
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text='%s - %s' % (
-                        friend['status'], friend['user'].first_name
-                    ),
-                    callback_data='friend:get:%i' % friend['user'].id,
-                )
-            ] for friend in friends_list
-        ]
-    )
+# def friends(friends_list: dict) -> InlineKeyboardMarkup:
+#     """Friends keyboard"""
+#     return InlineKeyboardMarkup(
+#         inline_keyboard=[
+#             [
+#                 InlineKeyboardButton(
+#                     text='%s - %s' % (
+#                         friend['status'], friend['user'].first_name
+#                     ),
+#                     callback_data='friend:get:%i' % friend['user'].id,
+#                 )
+#             ] for friend in friends_list
+#         ]
+#     )
 
 
-def friend(friend_id: dict) -> InlineKeyboardMarkup:
-    """Friend keyboard"""
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text='Пригласить в диалог💬',
-                    callback_data='friend:dialogue:%i' % friend_id,
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text='Назад',
-                    callback_data='friend:back',
-                )
-            ]
-        ]
-    )
+# def friend(friend_id: dict) -> InlineKeyboardMarkup:
+#     """Friend keyboard"""
+#     return InlineKeyboardMarkup(
+#         inline_keyboard=[
+#             [
+#                 InlineKeyboardButton(
+#                     text='Пригласить в диалог💬',
+#                     callback_data='friend:dialogue:%i' % friend_id,
+#                 )
+#             ],
+#             [
+#                 InlineKeyboardButton(
+#                     text='Назад',
+#                     callback_data='friend:back',
+#                 )
+#             ]
+#         ]
+#     )
 
 
-def friend_dialogue_request(friend_id: int) -> InlineKeyboardMarkup:
-    """Friend dialogue request keyboard"""
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text='Принять✅',
-                    callback_data='accept:dialogue:friend:%s' % friend_id,
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    text='Отклонить❌',
-                    callback_data='decline:dialogue:friend:%s' % friend_id,
-                ),
-            ],
-        ],
-    )
+# def friend_dialogue_request(friend_id: int) -> InlineKeyboardMarkup:
+#     """Friend dialogue request keyboard"""
+#     return InlineKeyboardMarkup(
+#         inline_keyboard=[
+#             [
+#                 InlineKeyboardButton(
+#                     text='Принять✅',
+#                     callback_data='accept:dialogue:friend:%s' % friend_id,
+#                 ),
+#             ],
+#             [
+#                 InlineKeyboardButton(
+#                     text='Отклонить❌',
+#                     callback_data='decline:dialogue:friend:%s' % friend_id,
+#                 ),
+#             ],
+#         ],
+#     )
 
 
 def room_list(rooms: List[Room]) -> InlineKeyboardMarkup:

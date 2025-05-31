@@ -20,9 +20,9 @@ async def show_profile(message: types.Message, user: User) -> None:
     await message.answer(
         texts.user.PROFILE % (
             escape(message.from_user.full_name),
-            ('Мужской' if user.is_man else 'Женский'),
+            ('Kişi' if user.is_man else 'Qadın'),
             user.age,
-            ('есть' if user.is_vip else 'нет'),
+            ('var' if user.is_vip else 'yox'),
             user.balance
 
         ),
@@ -37,12 +37,12 @@ async def pre_edit_profile(
     action = call.data.split(':')[1]
 
     if action == 'age':
-        await call.message.edit_text('<i>Введите ваш возраст:</>')
+        await call.message.edit_text('<i>Neçə yaşın var?</>')
         await state.set_state('edit.age')
 
     else:
         await call.message.edit_text(
-            '<i>Выберите ваш пол:</>',
+            '<i>Cins:</>',
             reply_markup=nav.inline.GENDER,
         )
 
@@ -60,7 +60,7 @@ async def edit_gender(
     if not user.age:
         with suppress(TelegramAPIError):
             await call.message.edit_text(
-                '<i>Теперь напиши свой возраст! (от 16 до 99)</i>'
+                '<i>Yaşınızı daxil edin (16-dan 99-da qədər)</i>'
             )
 
         await state.set_state('edit.age')
@@ -68,9 +68,9 @@ async def edit_gender(
         await call.message.edit_text(
             texts.user.PROFILE % (
                 escape(call.from_user.full_name),
-                ('Мужской' if user.is_man else 'Женский'),
+                ('Kişi' if user.is_man else 'Qadın'),
                 user.age,
-                ('есть' if user.is_vip else 'нет'),
+                ('var' if user.is_vip else 'yox'),
                 user.balance,
             ),
             reply_markup=nav.inline.PROFILE,
@@ -90,7 +90,7 @@ async def edit_age(
             raise ValueError
 
     except ValueError:
-        return await message.answer('<i>Введите корректный возраст.</>')
+        return await message.answer('<i>Düzgün yaş daxil edin.</>')
 
     prev_age = user.age
     user.age = age
@@ -112,7 +112,7 @@ async def pre_top_up_balance(
     """Pre top up balance handler"""
     with suppress(TelegramAPIError):
         await call.message.edit_text(
-            '<i>На какую сумму вы хотите пополнить баланс?</i>'
+            '<i>Balansınızı nə qədər artırmaq istərdiniz?</i>'
         )
     await state.set_state('add.balance')
 
@@ -173,7 +173,7 @@ async def check_bill(
 
     await call.message.delete()
     await call.message.answer(
-        '<i>💰 Ваш баланс пополнен на %i ₽ </>' % (int(item_id)),
+        '<i>💰 Ваш баланс пополнен на %i ₼ </>' % (int(item_id)),
     )
 
 
@@ -182,9 +182,9 @@ async def back_bill(call: types.CallbackQuery, user: User) -> None:
     await call.message.edit_text(
         texts.user.PROFILE % (
             escape(call.from_user.full_name),
-            ('Мужской' if user.is_man else 'Женский'),
+            ('Kişi' if user.is_man else 'Qadın'),
             user.age,
-            ('есть' if user.is_vip else 'нет'),
+            ('var' if user.is_vip else 'yox'),
             user.balance,
         ),
         reply_markup=nav.inline.PROFILE,
@@ -194,7 +194,7 @@ async def back_bill(call: types.CallbackQuery, user: User) -> None:
 def register(router: Router) -> None:
     """Register handlers"""
     router.message.register(show_profile, Command('profile'))
-    router.message.register(show_profile, Text('Профиль 👤'))
+    router.message.register(show_profile, Text('Profil 👤'))
     router.callback_query.register(pre_edit_profile, Text(startswith='edit:'))
     router.callback_query.register(pre_top_up_balance, Text('add:balance'))
     router.callback_query.register(back_bill, Text('back:profile'))

@@ -28,9 +28,9 @@ MENU = ReplyKeyboardMarkup(
             KeyboardButton(text='Выгрузка'),
             KeyboardButton(text='Рефералы'),
         ],
-        [
-            KeyboardButton(text='Управление комнатами'),
-        ],
+        # [
+        #     KeyboardButton(text='Управление комнатами'),
+        # ],
 
     ],
     resize_keyboard=True,

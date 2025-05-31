@@ -56,11 +56,11 @@ def ref(ref: str) -> InlineKeyboardMarkup:
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text='Назад',
+                    text='Geri',
                     callback_data='ref:list:1',
                 ),
                 InlineKeyboardButton(
-                    text='Удалить',
+                    text='Sil',
                     callback_data='ref:del:%s' % ref,
                 ),
             ]
@@ -177,60 +177,60 @@ def adverts(adverts: list[Advert]) -> dict:
     )
 
 
-def rooms(rooms: list[Room]) -> InlineKeyboardMarkup:
-    """Rooms keyboard"""
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            *(
-                [
-                    InlineKeyboardButton(
-                        text='🏠 %s' % room.room_name,
-                        callback_data='room:info:%i' % room.id,
-                    ),
-                    InlineKeyboardButton(
-                        text='👤 %i/%s' % (
-                            room.room_online_members,
-                            room.room_online_limit
-                            if room.room_online_limit != 0
-                            else '∞',
-                        ),
-                        callback_data='room:members:%i' % room.id,
-                    ),
-                    InlineKeyboardButton(
-                        text='🗑',
-                        callback_data='room:del:%i' % room.id,
-                    ),
-                ] for room in rooms
-            ),
-            [
-                InlineKeyboardButton(
-                    text='Добавить',
-                    callback_data='room:add',
-                )
-            ],
-        ],
-    )
+# def rooms(rooms: list[Room]) -> InlineKeyboardMarkup:
+#     """Rooms keyboard"""
+#     return InlineKeyboardMarkup(
+#         inline_keyboard=[
+#             *(
+#                 [
+#                     InlineKeyboardButton(
+#                         text='🏠 %s' % room.room_name,
+#                         callback_data='room:info:%i' % room.id,
+#                     ),
+#                     InlineKeyboardButton(
+#                         text='👤 %i/%s' % (
+#                             room.room_online_members,
+#                             room.room_online_limit
+#                             if room.room_online_limit != 0
+#                             else '∞',
+#                         ),
+#                         callback_data='room:members:%i' % room.id,
+#                     ),
+#                     InlineKeyboardButton(
+#                         text='🗑',
+#                         callback_data='room:del:%i' % room.id,
+#                     ),
+#                 ] for room in rooms
+#             ),
+#             [
+#                 InlineKeyboardButton(
+#                     text='Добавить',
+#                     callback_data='room:add',
+#                 )
+#             ],
+#         ],
+#     )
 
 
-def room_info(room: Room) -> InlineKeyboardMarkup:
-    """Room info keyboard"""
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text='Удалить комнату🗑',
-                    callback_data='room:del:%i' % room.id,
+# def room_info(room: Room) -> InlineKeyboardMarkup:
+#     """Room info keyboard"""
+#     return InlineKeyboardMarkup(
+#         inline_keyboard=[
+#             [
+#                 InlineKeyboardButton(
+#                     text='Удалить комнату🗑',
+#                     callback_data='room:del:%i' % room.id,
 
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text='Назад',
-                    callback_data='room:back',
-                )
-            ],
-        ],
-    )
+#                 )
+#             ],
+#             [
+#                 InlineKeyboardButton(
+#                     text='Назад',
+#                     callback_data='room:back',
+#                 )
+#             ],
+#         ],
+#     )
 
 
 DUMP = InlineKeyboardMarkup(

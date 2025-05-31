@@ -1,7 +1,7 @@
 """User texts"""
 
 START = '''
-🏠 Главное меню:
+🏠 Əsas menyu:
 '''
 
 REG_GENDER = '''
@@ -23,29 +23,28 @@ NOT_SUBBED = '''
 Подпишиcь и нажми «Продолжить»!</i>
 '''
 
-DEFAULT_VIP = 'Данный функционал доступен только для VIP пользователей'
+DEFAULT_VIP = 'Bu funksiya yalnız VIP istifadəçilər üçün əlçatandır'
 
 VIP = '''
-<b>Преимущества VIP 👑:</>
+<b>👑 VIP statusun üstünlükləri:</>
 
-<i>🔎 - Поиск по полу
-🔞 - Пошлый чат
-🏠 - Комнаты
-❌ - Отключение рекламы
-🖼 - Обмен медиа (фото, видео, гифки, стикеры)</>
+<i>🔎 - Cinslə axtarış
+🔞 - 18+ çat
+❌ - Reklamsız
+🖼 - Media paylaşımı (şəkillər, videolar, giflər, stikerlər)</>
 '''
-BUY_VIP_BALANCE = '''<b>Подписка VIP 👑
-🗓 Дней - </b> %s
+BUY_VIP_BALANCE = '''<b>👑 VIP abunəliyi
+🗓 Gün - </b> %s
 
-Стоимость: %s ₽
-Ваш баланс: %s ₽
+Qiymət: %s ₼
+Balans: %s ₼
 '''
 
 
 TOP_UP_BALANCE = '''
-💰 Пополнение баланса на сумму: %s ₽
+💰 %s ₼ balans artımı
 
-• <i>После оплаты нажмите на кнопку "Проверить"</i> ✅
+• <i>Ödənişdən sonra "Yoxla" düyməsini basın</i> ✅
 '''
 
 BILL = '''
@@ -54,53 +53,53 @@ BILL = '''
 • <i>После оплаты нажмите на кнопку "Проверить"</i> ✅
 '''
 REF = '''
-<i>Приглашайте пользователей по своей ссылке и получайте</> <b>👑 VIP статус</> <i>на 1 день за каждого третьего друга!</>
+<i>Dəvət linkini dostlarınla bölüş və hər qoşulan üçüncü dostun üçün 1 günlük </> <b>👑 VIP statusu</> <i>qazan!</>
 
-<b>Приглашено:</> <code>%i</>
+<b>Dəvət olunub:</> <code>%i</>
 
-Ваша персональная ссылка:
+Sənin şəxsi dəvət linkin:
 👉  https://t.me/%s?start=%i
 '''
 
 PROFILE = '''
-<b>👤 Профиль</>
+<b>👤 Profil</>
 
-<b>💬 Имя -</b> %s
-<b>👫 Пол -</b> %s
-<b>🔞 Возраст -</b> %s
+<b>💬 Ad -</b> %s
+<b>👫 Cins -</b> %s
+<b>🔞 Yaş -</b> %s
 <b>👑 VIP -</b> %s
-<b>💰 Баланс -</b> %i ₽
+<b>💰 Balans -</b> %i ₼
 '''
 
 SEARCH_END = '''
-<b>💬 Поиск прекращен</>
+<b>💬 Axtarış dayandırıldı</>
 
-<i>Для работы с ботом используйте кнопки снизу, также можно использовать меню команд.</>
+<i>Botdan istifadə etmək üçün aşağıdakı menyudan istifadə et.</>
 '''
 
 DIALOGUE_END = '''
-<b>💬 Диалог прекращен</>
+<b>💬 Çat bitdi</>
 
-<i>Для работы с ботом используйте кнопки снизу, также можно использовать меню команд.</>
+<i>Botdan istifadə etmək üçün aşağıdakı menyudan istifadə et.</>
 '''
 DIALOGUE_SEARCH = '''
-<b>🔎 Поиск собеседника...</>
+<b>🔎 Həmsöhbət axtarılır...</>
 
-<i>/stop - остановить поиск ❌</>
+<i>/stop - axtarışı dayandır ❌</>
 '''
-DIALOGUE_GENDER = '<i>Выберите пол собеседника! ❤️‍🔥</>'
+DIALOGUE_GENDER = '<i>Həmsöhbətin cinsini seçin! ❤️‍🔥</>'
 DIALOGUE_FOUND = '''
-<b>Собеседник найден! 🎁</>
+<b>Həmsöhbət tapıldı! 🎁</>
 
-<i>Для поиска след. собеседника - /next
-Для прекращения диалога - /stop</>
+<i>Növbəti həmsöhbəti tapmaq üçün - /next
+Çatı bitirmək üçün - /stop</>
 '''
 DIALOGUE_FRIEND = '''
 <b>Диалог с другом создан! 👥 </>
 
 <i>Для прекращения диалога - /stop</>
 '''
-BANNED = '<b>⛔️ Ваш аккаунт заблокирован.</>'
+BANNED = '<b>⛔️ Sizin hesab bloklanmışdır.</>'
 PRE_SHOW_CONTACTS = '''
 <b>📱 Показать контакты</>
 
@@ -142,14 +141,14 @@ FRIEND_DIALOGUE_REQUEST = '''
 
 
 PRE_COMPLAINT = '''
-<b>❗️ Напишите причину жалобы на собеседника</>
-<i>Следующее сообщение не будет отправлено собеседнику</>
+<b>❗️ Şikayətinizi qeyd edin</>
+<i>Bu mesajı qarşı tərəf görməyəcək</>
 '''
 
 
 VIEW_COMPLAINT = '''
-<b>❗️ Жалоба на собеседника</>
-Причина: <i>%s</>
+<b>❗️ Şikayət</>
+Səbəb: <i>%s</>
 '''
 
 

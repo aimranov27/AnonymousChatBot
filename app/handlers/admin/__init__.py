@@ -10,7 +10,7 @@ from . import (
     mail,
     adverts,
     requests,
-    rooms,
+    # rooms,
 )
 
 
@@ -25,4 +25,4 @@ def setup(router: Router) -> None:
     subscribe.register(router)
     adverts.register(router)
     requests.register(router)
-    rooms.register(router)
+    # rooms.register(router)

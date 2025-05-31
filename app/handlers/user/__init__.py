@@ -7,8 +7,8 @@ from . import (
     profile,
     dialogue,
     banned,
-    myfriends,
-    rooms
+    myfriends, # rooms
+    # rooms
 )
 
 
@@ -25,7 +25,7 @@ def setup(dp: Dispatcher, router: Router) -> None:
     start.register(router)
     vip.register(router)
     notsubbed.register(router)
-    rooms.register(router)
+    # rooms.register(router)
     profile.register(router)
-    myfriends.register(router)
+    # myfriends.register(router)
     dialogue.register(router)

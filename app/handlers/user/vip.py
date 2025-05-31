@@ -150,11 +150,11 @@ def register(router: Router) -> None:
 
     router.message.register(vip_menu, Text(
         [
-            'Поиск М 👨',
-            'Поиск Ж 👩',
-            'Пошлый чат 🔞',
-            'Поиск по полу ♂️',
-            'Комнаты 🏠',
+            'K axtar 👨',
+            'Q axtar 👩',
+            '18+ çat 🔞',
+            'Cinsəl axtarış ♂️',
+            # 'Комнаты 🏠',
         ]
     ), IsVip(False))
 

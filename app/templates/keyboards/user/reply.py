@@ -13,19 +13,19 @@ def main_menu(user: User) -> ReplyKeyboardMarkup:
 VIP_MENU = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text='Случайный диалог 🔍'),
+            KeyboardButton(text='Şans dialoqu 🔍'),
         ],
         [
-            KeyboardButton(text='Поиск Ж 👩'),
-            KeyboardButton(text='Поиск М 👨'),
+            KeyboardButton(text='Q axtar 👩'),
+            KeyboardButton(text='K axtar 👨'),
         ],
         [
-            KeyboardButton(text='Пошлый чат 🔞'),
-            KeyboardButton(text='Профиль 👤'),
+            KeyboardButton(text='18+ çat 🔞'),
+            KeyboardButton(text='Profil 👤'),
         ],
         [
-            KeyboardButton(text='Комнаты 🏠'),
-            KeyboardButton(text='Мои друзья 👥'),
+            # # KeyboardButton(text='Комнаты 🏠'),
+            # KeyboardButton(text='Мои друзья 👥'),
         ],
         [
             KeyboardButton(text='VIP 👑'),
@@ -36,18 +36,18 @@ VIP_MENU = ReplyKeyboardMarkup(
 USER_MENU = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text='Случайный диалог 🔍'),
+            KeyboardButton(text='Şans dialoqu 🔍'),
         ],
         [
-            KeyboardButton(text='Поиск по полу ♂️'),
+            KeyboardButton(text='Cinsəl axtarış ♂️'),
         ],
         [
-            KeyboardButton(text='Пошлый чат 🔞'),
-            KeyboardButton(text='Профиль 👤'),
+            KeyboardButton(text='18+ çat 🔞'),
+            KeyboardButton(text='Profil 👤'),
         ],
         [
-            KeyboardButton(text='Комнаты 🏠'),
-            KeyboardButton(text='Мои друзья 👥'),
+            # # KeyboardButton(text='Комнаты 🏠'),
+            # KeyboardButton(text='Мои друзья 👥'),
         ],
         [
             KeyboardButton(text='VIP 👑'),
@@ -59,16 +59,16 @@ USER_MENU = ReplyKeyboardMarkup(
 DIALOGUE_MENU = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text='Завершить диалог 🚫'),
+            KeyboardButton(text='Söhbəti bitir 🚫'),
         ],
         [
-            KeyboardButton(text='Добавить в друзья 👥'),
+            # KeyboardButton(text='Добавить в друзья 👥'),
         ],
         [
-            KeyboardButton(text='Показать контакты 📱'),
+           # KeyboardButton(text='Показать контакты 📱'),
         ],
         [
-            KeyboardButton(text='Пожаловаться 💬'),
+            KeyboardButton(text='Şikayət et 💬'),
         ]
     ],
     resize_keyboard=True,
@@ -90,20 +90,20 @@ DIALOGUE_FRIEND_MENU = ReplyKeyboardMarkup(
 )
 
 
-ROOM_MENU = ReplyKeyboardMarkup(
-    keyboard=[
-        [
-            KeyboardButton(text='Выйти из комнаты 🚪'),
-        ],
-        [
-            KeyboardButton(text='Участники 👤'),
-        ],
-        [
-            KeyboardButton(text='Сменить ник в комнате 🔄'),
-        ],
-    ],
-    resize_keyboard=True,
-)
+# ROOM_MENU = ReplyKeyboardMarkup(
+#     keyboard=[
+#         [
+#             KeyboardButton(text='Выйти из комнаты 🚪'),
+#         ],
+#         [
+#             KeyboardButton(text='Участники 👤'),
+#         ],
+#         [
+#             KeyboardButton(text='Сменить ник в комнате 🔄'),
+#         ],
+#     ],
+#     resize_keyboard=True,
+# )
 
 
 JOIN_REQUEST = ReplyKeyboardMarkup(
