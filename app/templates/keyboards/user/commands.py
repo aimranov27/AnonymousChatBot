@@ -5,6 +5,11 @@ from aiogram.types import BotCommand
 USER_COMMANDS = [
     BotCommand(
         command="start",
-        description="Запустить бота",
+        description="Botu işə sal",
     ),
+    BotCommand(
+        command="profile",
+        description="Profil 👤",
+    ),
+    
 ]
