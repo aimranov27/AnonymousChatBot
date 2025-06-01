@@ -1,9 +1,8 @@
 """Payments utils"""
-import random
 import logging
-import payok
-
 from dataclasses import dataclass
+from aiogram import Bot
+from aiogram.types import LabeledPrice
 
 
 @dataclass
@@ -13,67 +12,51 @@ class CheckResponse:
     amount: int = 0
 
 
-@dataclass
-class BaseBill:
-    """Base bill class"""
-    id: int
-    url: str = 'https://google.com'
-
-
-class BasePayment(object):
-    """Base payment class"""
-
-    async def check_payment(self, payment_id: int) -> CheckResponse:
-        """Check payment"""
-        return CheckResponse(True, 1)
-
-    async def create_payment(self, amount: int) -> BaseBill:
-        """Create payment"""
-        return BaseBill(id=self._get_id())
-
-    @staticmethod
-    def _get_id() -> int:
-        """Get random id"""
-        return random.getrandbits(32)
-
-
 logger = logging.getLogger('payments')
 
+class TelegramStars:
+    """Telegram Stars payment class"""
 
-class PayOK(BasePayment):
-    """PayOK class"""
+    def __init__(self, bot: Bot) -> None:
+        """Initialize the Telegram Stars payment class"""
+        self.bot = bot
 
-    def __init__(
-        self, api_id: int, api_key: str, project_id: int, project_secret: str,
+    async def create_payment(
+        self,
+        chat_id: int,
+        title: str,
+        description: str,
+        payload: str,
+        amount: int,
     ) -> None:
-        """Initialize the PayOK class"""
-        self.api = payok.PayOK(api_id, api_key, project_id, project_secret)
-
-    async def create_payment(self, amount: int) -> BaseBill:
-        """Create payment"""
-        pay_id = self._get_id()
-        url = await self.api.create_bill(
-            pay_id=pay_id,
-            amount=amount,
-        )
-        return BaseBill(
-            id=pay_id,
-            url=url,
-        )
-
-    async def check_payment(self, payment_id: int) -> CheckResponse:
-        """Check payment"""
+        """Create payment using Telegram Stars"""
         try:
-            bills = await self.api.get_transactions(payment_id=payment_id)
-        except payok.PayOKError as exc:
-            logger.error('PayOk: [%s] %s' % (exc.message, exc.code))
-            return CheckResponse(False)
+            # Create a valid start_parameter by removing any invalid characters
+            start_param = f"vip_{payload.replace(':', '_')}"
+            
+            await self.bot.send_invoice(
+                chat_id=chat_id,
+                title=title,
+                description=description,
+                payload=payload,
+                provider_token="",  # Empty for Telegram Stars
+                currency="XTR",  # Telegram Stars currency
+                prices=[LabeledPrice(label=title, amount=amount)],  # Price in stars
+                start_parameter=start_param,  # Valid format: starts with letter, only letters/numbers/underscores
+            )
+        except Exception as exc:
+            logger.error('Failed to create Telegram Stars payment: %s', str(exc))
+            raise
 
-        if not bills:
+    async def check_payment(self, payment_id: str) -> CheckResponse:
+        """Check payment status"""
+        try:
+            # Get payment status from Telegram
+            payment = await self.bot.get_payment(payment_id)
+            return CheckResponse(
+                is_paid=payment.status == "paid",
+                amount=payment.total_amount,  # Convert from cents
+            )
+        except Exception as exc:
+            logger.error('Failed to check Telegram Stars payment: %s', str(exc))
             return CheckResponse(False)
-
-        bill: payok.Transaction = bills[0]
-        return CheckResponse(
-            bill.is_paid,
-            bill.amount_profit,
-        )

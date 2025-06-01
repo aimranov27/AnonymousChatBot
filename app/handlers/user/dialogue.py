@@ -158,6 +158,7 @@ async def queue(
     await bot.send_message(
         user.id,
         texts.user.DIALOGUE_SEARCH,
+        reply_markup=nav.reply.SEARCH_MENU,
     )
 
 
@@ -191,7 +192,7 @@ async def create_dialogue(
                 await bot.send_message(
                     user_id,
                     texts.user.DIALOGUE_FOUND,
-                    reply_markup=nav.reply.DIALOGUE_MENU,
+                    reply_markup=types.ReplyKeyboardRemove(),
                 )
 
     await session.execute(
@@ -237,7 +238,7 @@ async def finish_dialogue(
 ) -> None:
     """Finish dialogue"""
     await message.answer(
-        texts.user.DIALOGUE_END if user.partner else texts.user.SEARCH_END,
+        texts.user.DIALOGUE_END_SELF if user.partner else texts.user.SEARCH_END,
         reply_markup=nav.reply.main_menu(user),
     )
     await show_ad(bot, state, session, user)
@@ -356,9 +357,7 @@ async def decline_friend_request(
         )
 
 
-async def pre_complaint(
-    message: types.Message, user: User, state: FSMContext
-) -> None:
+async def pre_complaint(message: types.Message, user: User, state: FSMContext) -> None:
     """Pre complaint"""
     await message.answer(
         texts.user.PRE_COMPLAINT,

@@ -9,7 +9,7 @@ class Bill(Base):
     """Bill model"""
     __tablename__ = 'bills'
 
-    id: Mapped[bigint] = mapped_column(primary_key=True)
+    id: Mapped[str] = mapped_column(primary_key=True)
     user_id: Mapped[bigint]
 
     amount: Mapped[int]

@@ -3,7 +3,6 @@ from typing import List
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from prices import VIP_OPTIONS
 from app.database.models import Sponsor, Room
-from app.utils.payments import BaseBill
 
 
 def split(items: list, size: int) -> list[list]:
@@ -35,91 +34,13 @@ def subscription(sponsors: list[Sponsor]) -> InlineKeyboardMarkup:
         ]
     )
 
-
-def bill(
-    bill: BaseBill, item_id: str, is_vip: bool = True
-) -> InlineKeyboardMarkup:
-    """Bill keyboard"""
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text='Ödəniş 🔗',
-                    url=bill.url,
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    text='Yoxla ✅',
-                    callback_data='check:%s:%i:%s' % (
-                        'vip' if is_vip else 'profile',
-                        bill.id, item_id,
-                    ),
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    text='Geri 🔙',
-                    callback_data='back:vip' if is_vip else 'back:profile',
-                ),
-            ],
-        ]
-    )
-
-
-def choose_bill(item_id) -> InlineKeyboardMarkup:
-    """Choose bill keyboard"""
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text='Оплатить балансом 💰',
-                    callback_data='buy:balance:%s' % item_id,
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text='Оплатить cсылкой 🔗',
-                    callback_data='buy:url:%s' % item_id,
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text='Geri 🔙',
-                    callback_data='back:vip',
-                ),
-            ],
-        ]
-    )
-
-
-def confirm_buy_balance(item_id) -> InlineKeyboardMarkup:
-    """Confirm buy balance keyboard"""
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text='Təsdiq et✅',
-                    callback_data='accept:buy:balance:%s' % item_id,
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    text='Geri 🔙',
-                    callback_data='back:vip',
-                ),
-            ],
-        ]
-    )
-
-
 BUY = InlineKeyboardMarkup(
     inline_keyboard=[
         *(
             [
                 InlineKeyboardButton(
                     text=item['name'],
-                    callback_data='buy:%s' % key,
+                    callback_data='buy:stars:%s' % key,
                 ),
             ] for key, item in VIP_OPTIONS.items()
         ),
@@ -172,14 +93,9 @@ PROFILE = InlineKeyboardMarkup(
                 callback_data='edit:age',
             ),
         ],
-        [
-            InlineKeyboardButton(
-                text='Balansı artır💰',
-                callback_data='add:balance',
-            ),
-        ],
     ],
 )
+
 GENDER = InlineKeyboardMarkup(
     inline_keyboard=[
         [
@@ -240,7 +156,6 @@ COMPLAINT = InlineKeyboardMarkup(
     ],
 )
 
-
 PRE_CHANGE_NICKNAME = InlineKeyboardMarkup(
     inline_keyboard=[
         [
@@ -251,7 +166,6 @@ PRE_CHANGE_NICKNAME = InlineKeyboardMarkup(
         ],
     ],
 )
-
 
 def change_nickname(new_nickname: dict) -> InlineKeyboardMarkup:
     """Change nickname keyboard"""
@@ -271,63 +185,6 @@ def change_nickname(new_nickname: dict) -> InlineKeyboardMarkup:
             ]
         ]
     )
-
-
-# def friends(friends_list: dict) -> InlineKeyboardMarkup:
-#     """Friends keyboard"""
-#     return InlineKeyboardMarkup(
-#         inline_keyboard=[
-#             [
-#                 InlineKeyboardButton(
-#                     text='%s - %s' % (
-#                         friend['status'], friend['user'].first_name
-#                     ),
-#                     callback_data='friend:get:%i' % friend['user'].id,
-#                 )
-#             ] for friend in friends_list
-#         ]
-#     )
-
-
-# def friend(friend_id: dict) -> InlineKeyboardMarkup:
-#     """Friend keyboard"""
-#     return InlineKeyboardMarkup(
-#         inline_keyboard=[
-#             [
-#                 InlineKeyboardButton(
-#                     text='Пригласить в диалог💬',
-#                     callback_data='friend:dialogue:%i' % friend_id,
-#                 )
-#             ],
-#             [
-#                 InlineKeyboardButton(
-#                     text='Назад',
-#                     callback_data='friend:back',
-#                 )
-#             ]
-#         ]
-#     )
-
-
-# def friend_dialogue_request(friend_id: int) -> InlineKeyboardMarkup:
-#     """Friend dialogue request keyboard"""
-#     return InlineKeyboardMarkup(
-#         inline_keyboard=[
-#             [
-#                 InlineKeyboardButton(
-#                     text='Принять✅',
-#                     callback_data='accept:dialogue:friend:%s' % friend_id,
-#                 ),
-#             ],
-#             [
-#                 InlineKeyboardButton(
-#                     text='Отклонить❌',
-#                     callback_data='decline:dialogue:friend:%s' % friend_id,
-#                 ),
-#             ],
-#         ],
-#     )
-
 
 def room_list(rooms: List[Room]) -> InlineKeyboardMarkup:
     """Room list keyboard"""

@@ -33,25 +33,13 @@ VIP = '''
 ❌ - Reklamsız
 🖼 - Media paylaşımı (şəkillər, videolar, giflər, stikerlər)</>
 '''
-BUY_VIP_BALANCE = '''<b>👑 VIP abunəliyi
-🗓 Gün - </b> %s
-
-Qiymət: %s ₼
-Balans: %s ₼
-'''
-
-
-TOP_UP_BALANCE = '''
-💰 %s ₼ balans artımı
-
-• <i>Ödənişdən sonra "Yoxla" düyməsini basın</i> ✅
-'''
 
 BILL = '''
 ⭐️ Чтобы получить доступ к VIP - подписке, оплатите счёт ниже ⬇️ 
 
 • <i>После оплаты нажмите на кнопку "Проверить"</i> ✅
 '''
+
 REF = '''
 <i>Dəvət linkini dostlarınla bölüş və hər qoşulan üçüncü dostun üçün 1 günlük </> <b>👑 VIP statusu</> <i>qazan!</>
 
@@ -68,24 +56,27 @@ PROFILE = '''
 <b>👫 Cins -</b> %s
 <b>🔞 Yaş -</b> %s
 <b>👑 VIP -</b> %s
-<b>💰 Balans -</b> %i ₼
 '''
 
 SEARCH_END = '''
-<b>💬 Axtarış dayandırıldı</>
+<i>Axtarış dayandırıldı
+Növbəti həmsöhbəti tapmaq üçün - /next
+</>
+'''
 
-<i>Botdan istifadə etmək üçün aşağıdakı menyudan istifadə et.</>
+DIALOGUE_END_SELF = '''
+<i>Siz söhbəti bitirdiniz 🙄
+Növbəti həmsöhbəti tapmaq üçün - /next
+</>
 '''
 
 DIALOGUE_END = '''
-<b>💬 Çat bitdi</>
-
-<i>Botdan istifadə etmək üçün aşağıdakı menyudan istifadə et.</>
+<i>Qarşı tərəf sizinlə əlaqəni kəsdi 😞
+Növbəti həmsöhbəti tapmaq üçün - /next
+</>
 '''
 DIALOGUE_SEARCH = '''
-<b>🔎 Həmsöhbət axtarılır...</>
-
-<i>/stop - axtarışı dayandır ❌</>
+<i>🔎 Həmsöhbət axtarılır...</>
 '''
 DIALOGUE_GENDER = '<i>Həmsöhbətin cinsini seçin! ❤️‍🔥</>'
 DIALOGUE_FOUND = '''

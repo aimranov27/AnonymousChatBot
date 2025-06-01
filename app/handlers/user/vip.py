@@ -1,6 +1,7 @@
 """VIP handlers"""
 
-from aiogram import Router, types
+import logging
+from aiogram import Router, types, F
 from aiogram.filters import Text
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,8 +10,11 @@ from prices import VIP_OPTIONS
 from app.filters import IsVip
 from app.templates import texts
 from app.templates.keyboards import user as nav
-from app.utils.payments import BasePayment
+from app.utils.payments import TelegramStars
 from app.database.models import User, Bill
+
+
+logger = logging.getLogger('vip')
 
 
 async def vip_menu(update: types.Message | types.CallbackQuery) -> None:
@@ -18,8 +22,8 @@ async def vip_menu(update: types.Message | types.CallbackQuery) -> None:
     if isinstance(update, types.CallbackQuery):
         update = update.message
 
-    elif update.text in ('Поиск М 👨', 'Поиск Ж 👩'):
-        await update.answer('Кажется, ваша VIP-подписка истекла...')
+    elif update.text in ('K axtar 👨', 'Q axtar 👩'):
+        await update.answer('VIP abunəliyinizin müddəti başa çatıb.')
 
     await update.answer(
         texts.user.VIP,
@@ -27,100 +31,98 @@ async def vip_menu(update: types.Message | types.CallbackQuery) -> None:
     )
 
 
-async def choose_bill(call: types.CallbackQuery) -> None:
-    """Choose bill"""
-    item_id = call.data.split(':')[1]
+async def create_stars_payment(call: types.CallbackQuery, payment: TelegramStars) -> None:
+    """Create Stars payment"""
+    try:
+        item_id = call.data.split(':')[-1]
+        item = VIP_OPTIONS[item_id]
 
-    await call.message.edit_text(
-        "Выберите способ оплаты:",
-        reply_markup=nav.inline.choose_bill(item_id),
-    )
-
-
-async def pre_balance_bill(call: types.CallbackQuery, user: User) -> None:
-    """Pre balance bill"""
-    item_id = call.data.split(':')[-1]
-    item = VIP_OPTIONS[item_id]
-
-    await call.message.edit_text(
-        texts.user.BUY_VIP_BALANCE % (
-            item['days'], item['price'], user.balance),
-        reply_markup=nav.inline.confirm_buy_balance(item_id),
-    )
+        await payment.create_payment(
+            chat_id=call.message.chat.id,
+            title=f"VIP abunə",
+            description=f"{item['days']} günlük VIP abunəlik əldə edirsiniz",
+            payload=f"vip:{item_id}",
+            amount=int(item['starPrice']),
+        )
+        await call.message.delete()
+    except Exception as e:
+        logger.error(f"Ödəniş yaratmaq alınmadı: {str(e)}")
+        await call.answer("Ödəniş yaratmaq alınmadı. Lütfən, yenidən cəhd edin.", show_alert=True)
 
 
-async def balance_bill(
-    call: types.CallbackQuery, session: AsyncSession, user: User,
-) -> None:
-    """Balance bill"""
-    item_id = call.data.split(':')[-1]
-    item = VIP_OPTIONS[item_id]
+async def pre_checkout_query(pre_checkout_query: types.PreCheckoutQuery, payment: TelegramStars) -> None:
+    """Handle pre-checkout query"""
+    try:
+        # Verify the payment payload
+        if not pre_checkout_query.invoice_payload.startswith("vip:"):
+            await pre_checkout_query.answer(
+                ok=False,
+                error_message="Yanlış ödəniş yükü. Yenidən cəhd edin."
+            )
+            return
 
-    user.balance -= item['price']
-    if user.balance < 0:
-        return await call.answer(
-            '💰 Недостаточно средств, пожалуйста, пополните баланс', True
+        # Verify the item exists
+        item_id = pre_checkout_query.invoice_payload.split(':')[1]
+        if item_id not in VIP_OPTIONS:
+            await pre_checkout_query.answer(
+                ok=False,
+                error_message="Yanlış abunə seçimi. Yenidən cəhd edin."
+            )
+            return
+
+        # Accept the payment
+        await pre_checkout_query.answer(ok=True)
+    except Exception as e:
+        logger.error(f"Pre-checkout error: {str(e)}")
+        await pre_checkout_query.answer(
+            ok=False,
+            error_message="Ödəniş təsdiq edilməmişdir. Yenidən cəhd edin."
         )
 
-    user.add_vip(VIP_OPTIONS[item_id]['days'])
-    await session.commit()
-    await call.message.delete()
-    await call.message.answer(
-        '<i>Поздравляем, теперь вы - VIP 👑</>!',
-        reply_markup=nav.reply.main_menu(user),
-    )
 
+async def successful_payment(message: types.Message, session: AsyncSession, payment: TelegramStars) -> None:
+    """Handle successful payment"""
+    try:
+        # Extract item_id from payload
+        item_id = message.successful_payment.invoice_payload.split(':')[1]
+        if item_id not in VIP_OPTIONS:
+            raise ValueError(f"Invalid item_id: {item_id}")
 
-async def create_bill(call: types.CallbackQuery, payment: BasePayment) -> None:
-    """Create bill"""
-    item_id = call.data.split(':')[-1]
-    item = VIP_OPTIONS[item_id]
+        item = VIP_OPTIONS[item_id]
 
-    bill = await payment.create_payment(item['price'])
-    await call.message.edit_text(
-        texts.user.BILL,
-        reply_markup=nav.inline.bill(bill, item_id),
-    )
-
-
-async def check_bill(
-    call: types.CallbackQuery,
-    session: AsyncSession,
-    user: User,
-    payment: BasePayment,
-) -> None:
-    """Check bill"""
-    bill_id, item_id = call.data.split(':')[2:]
-    bill_status = await payment.check_payment(int(bill_id))
-
-    if not bill_status.is_paid:
-        return await call.answer('Оплата еще не прошла❗', True)
-
-    bill = await session.scalar(
-        select(Bill)
-        .where(Bill.id == int(bill_id))
-    )
-
-    if bill:
-        return await call.answer('Этот счет слишком старый ⏲️', True)
-
-    user.add_vip(VIP_OPTIONS[item_id]['days'])
-
-    session.add(
-        Bill(
-            id=int(bill_id),
-            user_id=user.id,
-            amount=bill_status.amount,
-            ref=user.ref,
+        # Get user
+        user = await session.scalar(
+            select(User)
+            .where(User.id == message.from_user.id)
         )
-    )
-    await session.commit()
+        if not user:
+            raise ValueError(f"İstifadəçi tapılmadı: {message.from_user.id}")
 
-    await call.message.delete()
-    await call.message.answer(
-        '<i>Поздравляем, теперь вы - VIP 👑</>!',
-        reply_markup=nav.reply.main_menu(user),
-    )
+        # Add VIP
+        user.add_vip(item['days'])
+
+        # Record payment
+        session.add(
+            Bill(
+                id=message.successful_payment.telegram_payment_charge_id,
+                user_id=user.id,
+                amount=message.successful_payment.total_amount,
+                ref=user.ref,
+            )
+        )
+        await session.commit()
+
+        # Send confirmation
+        await message.answer(
+            f'<i>Təbrik edirik, siz {item["days"]} günlük VIP statusunu əldə etdiniz!</>',
+            reply_markup=nav.reply.main_menu(user),
+        )
+    except Exception as e:
+        logger.error(f"Ödənişin işlənmə xətası: {str(e)}")
+        await message.answer(
+            "Uğursuz ödəniş. Dəstək xidməti ilə əlaqə saxlayın və kodu bildirin: " + 
+            message.successful_payment.telegram_payment_charge_id
+        )
 
 
 async def back_bill(call: types.CallbackQuery) -> None:
@@ -147,7 +149,7 @@ async def referral(
 
 
 def register(router: Router) -> None:
-
+    """Register handlers"""
     router.message.register(vip_menu, Text(
         [
             'K axtar 👨',
@@ -160,14 +162,10 @@ def register(router: Router) -> None:
 
     router.message.register(vip_menu, Text('VIP 👑'))
     router.callback_query.register(vip_menu, Text('vip'))
-    router.callback_query.register(
-        pre_balance_bill, Text(startswith='buy:balance')
-    )
-    router.callback_query.register(
-        balance_bill, Text(startswith='accept:buy:balance')
-    )
-    router.callback_query.register(create_bill, Text(startswith='buy:url'))
-    router.callback_query.register(choose_bill, Text(startswith='buy:'))
-    router.callback_query.register(check_bill, Text(startswith='check:vip:'))
+    router.callback_query.register(create_stars_payment, Text(startswith='buy:stars'))
     router.callback_query.register(back_bill, Text('back:vip'))
     router.callback_query.register(referral, Text('ref'))
+
+    # Register payment handlers
+    router.pre_checkout_query.register(pre_checkout_query)
+    router.message.register(successful_payment, F.successful_payment)

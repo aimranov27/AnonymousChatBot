@@ -42,20 +42,16 @@ async def main() -> None:
         storage = MemoryStorage()
 
     sessionmaker = await create_sessionmaker(config.db)
-    payment = (
-        payments.BasePayment() if not config.payments.enabled
-        else payments.PayOK(
-            config.payments.api_id,
-            config.payments.api_key,
-            config.payments.project_id,
-            config.payments.project_secret,
-        )
-    )
-
+    
     bot = Bot(
         token=config.bot.token,
         parse_mode="HTML",
     )
+    
+    payment = (
+        payments.TelegramStars(bot)
+    )
+
     dp = Dispatcher(storage=storage)
 
     middlewares.setup(dp, sessionmaker)

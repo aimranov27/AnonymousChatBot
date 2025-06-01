@@ -120,3 +120,10 @@ JOIN_REQUEST = ReplyKeyboardMarkup(
         ],
     ],
 )
+
+SEARCH_MENU = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text='Söhbəti bitir 🚫')],
+    ],
+    resize_keyboard=True,
+)
