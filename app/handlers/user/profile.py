@@ -126,10 +126,10 @@ async def top_up_balance(
     try:
         amount: int = int(message.text)
     except ValueError:
-        return await message.answer('<i>Введите корректную сумму.</>')
+        return await message.answer('<i>Məbləği rəqəm olaraq daxil edin.</>')
 
     if amount < 1:
-        return await message.answer('<i>Сумма должна быть больше нуля.</>')
+        return await message.answer('<i>Məbləğ sıfırdan yüksək olmalıdır.</>')
 
     await state.clear()
     bill = await payment.create_payment(amount)
@@ -150,7 +150,7 @@ async def check_bill(
     bill_status = await payment.check_payment(int(bill_id))
 
     if not bill_status.is_paid:
-        return await call.answer('Оплата еще не прошла❗', True)
+        return await call.answer('Uğursuz ödəniş❗', True)
 
     bill = await session.scalar(
         select(Bill)
@@ -158,7 +158,7 @@ async def check_bill(
     )
 
     if bill:
-        return await call.answer('Этот счет слишком старый ⏲️', True)
+        return await call.answer('Hesab köhnəlmişdir ⏲️', True)
 
     user.balance += int(item_id)
     session.add(
@@ -173,7 +173,7 @@ async def check_bill(
 
     await call.message.delete()
     await call.message.answer(
-        '<i>💰 Ваш баланс пополнен на %i ₼ </>' % (int(item_id)),
+        '<i>💰 Balansınız %i ₼ məbləğində artırılmışdır </>' % (int(item_id)),
     )
 
 
