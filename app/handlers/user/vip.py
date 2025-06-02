@@ -61,6 +61,7 @@ async def create_stars_payment(call: types.CallbackQuery, payment: TelegramStars
 
 async def pre_checkout_query(pre_checkout_query: types.PreCheckoutQuery, payment: TelegramStars) -> None:
     """Handle pre-checkout query"""
+    logger.info(f"[PRE_CHECKOUT] Received pre_checkout_query: {pre_checkout_query}")
     try:
         # Verify the payment payload
         if not pre_checkout_query.invoice_payload.startswith("vip:"):
