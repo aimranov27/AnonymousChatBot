@@ -55,11 +55,10 @@ async def on_startup():
         parse_mode="HTML",
     )
 
-    bot['config'] = config  # 🔥 Store config in bot context
-
     payment = payments.TelegramStars(bot)
 
     dp = Dispatcher(storage=storage)
+    dp["config"] = config  # 🔥 Store config in dispatcher context
     middlewares.setup(dp, sessionmaker)
     handlers.setup(dp)
 
@@ -92,7 +91,7 @@ async def telegram_webhook(request: Request):
     try:
         update = await request.json()
         logger.info(f"Received webhook update: {update}")
-        config = bot['config']  # 🔥 Fetch from bot context
+        config = dp["config"]
         logger.info(f"Current config: {config}")
         await dp.feed_update(bot, types.Update(**update))
     except Exception as e:
