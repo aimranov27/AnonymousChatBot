@@ -3,6 +3,9 @@ from typing import Any
 from pydantic import BaseSettings, validator
 from functools import lru_cache
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class BaseConfig(BaseSettings):
