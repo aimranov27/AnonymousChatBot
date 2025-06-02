@@ -55,6 +55,8 @@ async def on_startup():
         parse_mode="HTML",
     )
 
+    bot['config'] = config  # 🔥 Store config in bot context
+
     payment = payments.TelegramStars(bot)
 
     dp = Dispatcher(storage=storage)
@@ -67,6 +69,7 @@ async def on_startup():
     webhook_url = f"https://{config.bot.domain}/webhook"
     await bot.set_webhook(webhook_url)
     logger.info(f"Webhook set: {webhook_url}")
+
 
 # Shutdown cleanup
 async def on_shutdown():
@@ -89,8 +92,9 @@ async def telegram_webhook(request: Request):
     try:
         update = await request.json()
         logger.info(f"Received webhook update: {update}")
+        config = bot['config']  # 🔥 Fetch from bot context
         logger.info(f"Current config: {config}")
-        await dp.process_update(types.Update(**update))
+        await dp.feed_update(bot, types.Update(**update))
     except Exception as e:
         logger.error(f"Webhook processing error: {str(e)}")
     return {"ok": True}
