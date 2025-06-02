@@ -20,4 +20,4 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY --chown=appuser:appgroup . .
 USER appuser
 
-CMD ["python", "main.py"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
