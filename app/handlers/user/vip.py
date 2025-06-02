@@ -159,7 +159,7 @@ async def referral(
     )
 
 
-def register(router: Router) -> None:
+def register(router: Router, payment: TelegramStars) -> None:
     """Register handlers"""
     router.message.register(vip_menu, Text(
         [
@@ -173,7 +173,7 @@ def register(router: Router) -> None:
 
     router.message.register(vip_menu, Text('VIP 👑'))
     router.callback_query.register(vip_menu, Text('vip'))
-    router.callback_query.register(create_stars_payment, Text(startswith='buy:stars'))
+    router.callback_query.register(create_stars_payment, Text(startswith='buy:stars'), payment=payment)
     router.callback_query.register(back_bill, Text('back:vip'))
     router.callback_query.register(referral, Text('ref'))
 

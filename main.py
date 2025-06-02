@@ -60,7 +60,7 @@ async def on_startup():
     dp = Dispatcher(storage=storage)
     dp["config"] = config  # 🔥 Store config in dispatcher context
     middlewares.setup(dp, sessionmaker)
-    handlers.setup(dp)
+    handlers.setup(dp, payment)
 
     await set_commands(bot, config, sessionmaker)
     await schedule.setup(bot, sessionmaker)

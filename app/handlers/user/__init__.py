@@ -12,7 +12,7 @@ from . import (
 )
 
 
-def setup(dp: Dispatcher, router: Router) -> None:
+def setup(dp: Dispatcher, router: Router, payment) -> None:
     """
     Register user handlers.
 
@@ -23,7 +23,7 @@ def setup(dp: Dispatcher, router: Router) -> None:
     events.register(dp)
     banned.register(router)
     start.register(router)
-    vip.register(router)
+    vip.register(router, payment)
     notsubbed.register(router)
     # rooms.register(router)
     profile.register(router)
