@@ -1,7 +1,6 @@
 """Main file for the bot (Webhook version)"""
 import os
 import time
-import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher, types
@@ -59,7 +58,7 @@ async def on_startup():
 
     dp = Dispatcher(storage=storage)
     dp["config"] = config  # 🔥 Store config in dispatcher context
-    middlewares.setup(dp, sessionmaker)
+    middlewares.setup(dp, sessionmaker, payment)
     handlers.setup(dp)
 
     await set_commands(bot, config, sessionmaker)

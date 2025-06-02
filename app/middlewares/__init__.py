@@ -1,14 +1,16 @@
 """Middlewares package"""
 from aiogram import Dispatcher
+from app.utils.payments import TelegramStars
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from .user import UserMiddleware
 from .callback import CallbackMiddleware
 from .subscribe import SubMiddleware
 from .session import SessionMiddleware
+from .payment import PaymentMiddleware
 
 
-def setup(dp: Dispatcher, sessionmaker: async_sessionmaker) -> None:
+def setup(dp: Dispatcher, sessionmaker: async_sessionmaker, payment: TelegramStars) -> None:
     """
     Initialises and binds all the middlewares.
 
@@ -22,3 +24,4 @@ def setup(dp: Dispatcher, sessionmaker: async_sessionmaker) -> None:
     dp.callback_query.outer_middleware(SubMiddleware())
     dp.inline_query.outer_middleware(SubMiddleware())
     dp.callback_query.outer_middleware(CallbackMiddleware())
+    dp.update.outer_middleware(PaymentMiddleware(payment))
