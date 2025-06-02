@@ -88,7 +88,9 @@ async def shutdown_event():
 async def telegram_webhook(request: Request):
     try:
         update = await request.json()
-        await dp.feed_update(bot, types.Update(**update))
+        logger.info(f"Received webhook update: {update}")
+        logger.info(f"Current config: {config}")
+        await dp.process_update(types.Update(**update))
     except Exception as e:
         logger.error(f"Webhook processing error: {str(e)}")
     return {"ok": True}
