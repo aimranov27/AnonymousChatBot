@@ -3,6 +3,7 @@ import logging
 from dataclasses import dataclass
 from aiogram import Bot
 from aiogram.types import LabeledPrice
+import time
 
 
 @dataclass
@@ -31,8 +32,20 @@ class TelegramStars:
     ) -> None:
         """Create payment using Telegram Stars"""
         try:
-            # Create a valid start_parameter by removing any invalid characters
-            start_param = f"vip_{payload.replace(':', '_')}"
+            # Validate amount
+            if amount <= 0:
+                raise ValueError("Amount must be greater than 0")
+
+            # Create a valid start_parameter
+            # Remove any non-alphanumeric characters except underscore
+            safe_payload = ''.join(c for c in payload if c.isalnum() or c == '_')
+            # Ensure it starts with a letter
+            if not safe_payload[0].isalpha():
+                safe_payload = 'p_' + safe_payload
+            # Add timestamp to ensure uniqueness
+            start_param = f"vip_{safe_payload}_{int(time.time())}"
+            
+            logger.info(f"Creating payment with params: chat_id={chat_id}, title={title}, amount={amount}, start_param={start_param}")
             
             await self.bot.send_invoice(
                 chat_id=chat_id,
@@ -42,10 +55,11 @@ class TelegramStars:
                 provider_token="",  # Empty for Telegram Stars
                 currency="XTR",  # Telegram Stars currency
                 prices=[LabeledPrice(label=title, amount=amount)],  # Price in stars
-                start_parameter=start_param,  # Valid format: starts with letter, only letters/numbers/underscores
+                start_parameter=start_param,
             )
+            logger.info(f"Payment created successfully for chat_id={chat_id}")
         except Exception as exc:
-            logger.error('Failed to create Telegram Stars payment: %s', str(exc))
+            logger.error('Failed to create Telegram Stars payment: %s', str(exc), exc_info=True)
             raise
 
     async def check_payment(self, payment_id: str) -> CheckResponse:

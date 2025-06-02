@@ -35,7 +35,13 @@ async def create_stars_payment(call: types.CallbackQuery, payment: TelegramStars
     """Create Stars payment"""
     try:
         item_id = call.data.split(':')[-1]
+        if item_id not in VIP_OPTIONS:
+            logger.error(f"Invalid item_id in callback data: {call.data}")
+            await call.answer("Invalid item selected. Please try again.", show_alert=True)
+            return
+
         item = VIP_OPTIONS[item_id]
+        logger.info(f"Creating payment for item: {item_id}, user: {call.from_user.id}")
 
         await payment.create_payment(
             chat_id=call.message.chat.id,
@@ -45,8 +51,11 @@ async def create_stars_payment(call: types.CallbackQuery, payment: TelegramStars
             amount=int(item['starPrice']),
         )
         await call.message.delete()
+    except ValueError as e:
+        logger.error(f"Invalid payment parameters: {str(e)}")
+        await call.answer("Invalid payment parameters. Please try again.", show_alert=True)
     except Exception as e:
-        logger.error(f"Ödəniş yaratmaq alınmadı: {str(e)}")
+        logger.error(f"Payment creation failed: {str(e)}", exc_info=True)
         await call.answer("Ödəniş yaratmaq alınmadı. Lütfən, yenidən cəhd edin.", show_alert=True)
 
 
