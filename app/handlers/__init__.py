@@ -4,7 +4,7 @@ from app.filters import IsAdmin
 from . import admin, user
 
 
-def setup(dp: Dispatcher, payment) -> None:
+def setup(dp: Dispatcher) -> None:
     """
     Setup all the handlers and routers, bind filters
 
@@ -19,4 +19,4 @@ def setup(dp: Dispatcher, payment) -> None:
 
     user_router = Router()
     dp.include_router(user_router)
-    user.setup(dp, user_router, payment)
+    user.setup(dp, user_router)
