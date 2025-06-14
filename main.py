@@ -130,17 +130,24 @@ async def on_shutdown():
             # Close FSM storage
             await dp.fsm.storage.close()
             logger.info("FSM storage closed")
+            
+            # Close all client sessions
+            if hasattr(dp, 'bot') and dp.bot and dp.bot.session:
+                await dp.bot.session.close()
+                logger.info("Bot session closed")
         except Exception as e:
             logger.error(f"Error closing FSM storage: {e}")
     
     # Close all pending tasks
-    for task in asyncio.all_tasks():
-        if not task.done():
-            task.cancel()
-            try:
-                await task
-            except asyncio.CancelledError:
-                pass
+    tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
+    for task in tasks:
+        task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
+        except Exception as e:
+            logger.error(f"Error cancelling task: {e}")
     
     logger.info("Bot shutdown complete")
 
