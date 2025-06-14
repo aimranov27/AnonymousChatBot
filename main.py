@@ -69,7 +69,18 @@ async def on_startup():
     await schedule.setup(bot, sessionmaker)
 
     webhook_url = f"https://{config.bot.domain}/webhook"
-    await bot.set_webhook(webhook_url)
+    await bot.set_webhook(
+        webhook_url,
+        allowed_updates=[
+            "message",
+            "edited_message",
+            "callback_query",
+            "message_reaction",
+            "message_reaction_count",
+            "pre_checkout_query",
+            "successful_payment"
+        ]
+    )
     logger.info(f"Webhook set: {webhook_url}")
     
     is_ready = True
