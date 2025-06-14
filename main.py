@@ -3,11 +3,7 @@ import os
 import time
 import signal
 import logging
-import asyncio
 from datetime import datetime
-from typing import Optional, Set
-from contextlib import asynccontextmanager
-import aiohttp
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -30,140 +26,67 @@ logger = logging.getLogger(__name__)
 
 # App & global variables
 app = FastAPI()
-bot: Optional[Bot] = None
-dp: Optional[Dispatcher] = None
+bot = None
+dp = None
 sessionmaker = None
 payment = None
 is_ready = False
-client_sessions: Set[asyncio.Task] = set()
 
 # Signal handlers
 def handle_sigterm(*_):
     """Handle SIGTERM signal"""
     logger.info("Received SIGTERM signal")
-    asyncio.create_task(on_shutdown())
+    sys.exit(0)
 
 # Register signal handlers
 signal.signal(signal.SIGTERM, handle_sigterm)
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Lifespan context manager for FastAPI"""
-    await on_startup()
-    yield
-    await on_shutdown()
+# Initialize bot and dispatcher
+config = load_config()
+os.environ['TZ'] = config.bot.timezone
+time.tzset()
+logger.info(f'Set timezone to "{config.bot.timezone}"')
 
-app = FastAPI(lifespan=lifespan)
-
-# Main initialization function
-async def on_startup():
-    global bot, dp, sessionmaker, payment, is_ready
-
-    logger.info("Starting bot...")
-    config = load_config()
-
-    os.environ['TZ'] = config.bot.timezone
-    time.tzset()
-    logger.info(f'Set timezone to "{config.bot.timezone}"')
-
-    # Setup storage
-    if config.bot.use_redis:
-        storage = RedisStorage.from_url(
-            f'redis://{config.redis.host}:6379/{config.redis.db}'
-        )
-    else:
-        storage = MemoryStorage()
-
-    sessionmaker = await create_sessionmaker(config.db)
-
-    bot = Bot(
-        token=config.bot.token,
-        parse_mode="HTML",
+# Setup storage
+if config.bot.use_redis:
+    storage = RedisStorage.from_url(
+        f'redis://{config.redis.host}:6379/{config.redis.db}'
     )
+else:
+    storage = MemoryStorage()
 
-    payment = payments.TelegramStars(bot)
+sessionmaker = create_sessionmaker(config.db)
 
-    dp = Dispatcher(storage=storage)
-    dp["config"] = config  # 🔥 Store config in dispatcher context
-    middlewares.setup(dp, sessionmaker, payment)
-    handlers.setup(dp)
+bot = Bot(
+    token=config.bot.token,
+    parse_mode="HTML",
+)
 
-    await set_commands(bot, config, sessionmaker)
-    await schedule.setup(bot, sessionmaker)
+payment = payments.TelegramStars(bot)
 
-    webhook_url = f"https://{config.bot.domain}/webhook"
-    await bot.set_webhook(
-        webhook_url,
-        allowed_updates=[
-            "message",
-            "edited_message",
-            "callback_query",
-            "message_reaction",
-            "message_reaction_count",
-            "pre_checkout_query",
-            "successful_payment"
-        ]
-    )
-    logger.info(f"Webhook set: {webhook_url}")
-    
-    is_ready = True
-    logger.info("Bot startup complete and ready to handle requests")
+dp = Dispatcher(storage=storage)
+dp["config"] = config  # Store config in dispatcher context
+middlewares.setup(dp, sessionmaker, payment)
+handlers.setup(dp)
 
-# Shutdown cleanup
-async def on_shutdown():
-    global is_ready
-    is_ready = False
-    
-    logger.info("Starting bot shutdown...")
-    
-    if bot:
-        try:
-            # Close bot session
-            await bot.session.close()
-            # Remove webhook
-            await bot.delete_webhook()
-            logger.info("Bot webhook removed")
-        except Exception as e:
-            logger.error(f"Error during bot shutdown: {e}")
-    
-    if dp:
-        try:
-            # Close FSM storage
-            await dp.fsm.storage.close()
-            logger.info("FSM storage closed")
-            
-            # Close all client sessions
-            if hasattr(dp, 'bot') and dp.bot:
-                if hasattr(dp.bot, 'session') and dp.bot.session:
-                    await dp.bot.session.close()
-                    logger.info("Bot session closed")
-                if hasattr(dp.bot, '_session') and dp.bot._session:
-                    await dp.bot._session.close()
-                    logger.info("Bot internal session closed")
-        except Exception as e:
-            logger.error(f"Error closing FSM storage: {e}")
-    
-    # Close all pending tasks
-    tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
-    for task in tasks:
-        task.cancel()
-        try:
-            await task
-        except asyncio.CancelledError:
-            pass
-        except Exception as e:
-            logger.error(f"Error cancelling task: {e}")
-    
-    # Ensure all aiohttp sessions are closed
-    for task in asyncio.all_tasks():
-        if hasattr(task, 'session') and isinstance(task.session, aiohttp.ClientSession):
-            try:
-                await task.session.close()
-                logger.info("Closed aiohttp client session")
-            except Exception as e:
-                logger.error(f"Error closing aiohttp session: {e}")
-    
-    logger.info("Bot shutdown complete")
+# Set webhook
+webhook_url = f"https://{config.bot.domain}/webhook"
+bot.set_webhook(
+    webhook_url,
+    allowed_updates=[
+        "message",
+        "edited_message",
+        "callback_query",
+        "message_reaction",
+        "message_reaction_count",
+        "pre_checkout_query",
+        "successful_payment"
+    ]
+)
+logger.info(f"Webhook set: {webhook_url}")
+
+is_ready = True
+logger.info("Bot startup complete and ready to handle requests")
 
 # Webhook endpoint
 @app.post("/webhook")
@@ -213,4 +136,4 @@ async def telegram_webhook(request: Request):
 # Run locally with uvicorn for debugging (optional)
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8080)
+    uvicorn.run(app, host="0.0.0.0", port=8080)
