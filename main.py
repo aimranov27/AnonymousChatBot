@@ -2,6 +2,7 @@
 import os
 import time
 import logging
+from datetime import datetime
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -87,14 +88,39 @@ async def shutdown_event():
 # Webhook endpoint
 @app.post("/webhook")
 async def telegram_webhook(request: Request):
+    start_time = time.time()
+    request_id = f"{datetime.now().strftime('%Y%m%d%H%M%S')}-{int(start_time * 1000)}"
+    logger.info(f"[{request_id}] Webhook request received at {datetime.now().isoformat()}")
+    
     try:
+        # Parse the update
         update = await request.json()
-        logger.info(f"Received webhook update: {update}")
+        parse_time = time.time() - start_time
+        logger.info(f"[{request_id}] Update parsed in {parse_time:.3f}s")
+        
+        # Log update type and details
+        update_type = update.get('message', {}).get('text') or update.get('callback_query', {}).get('data') or update.get('pre_checkout_query', {}).get('invoice_payload') or 'unknown'
+        logger.info(f"[{request_id}] Update type: {update_type}")
+        
+        # Process the update
+        process_start = time.time()
         config = dp["config"]
-        logger.info(f"Current config: {config}")
+        logger.info(f"[{request_id}] Starting update processing")
+        
         await dp.feed_update(bot, types.Update(**update))
+        process_time = time.time() - process_start
+        logger.info(f"[{request_id}] Update processed in {process_time:.3f}s")
+        
+        # Calculate total time
+        total_time = time.time() - start_time
+        logger.info(f"[{request_id}] Total webhook processing time: {total_time:.3f}s")
+        
+        if total_time > 5:  # Warning if processing takes more than 5 seconds
+            logger.warning(f"[{request_id}] Webhook processing took longer than 5 seconds!")
+            
     except Exception as e:
-        logger.error(f"Webhook processing error: {str(e)}")
+        error_time = time.time() - start_time
+        logger.error(f"[{request_id}] Webhook processing error after {error_time:.3f}s: {str(e)}", exc_info=True)
     return {"ok": True}
 
 # Run locally with uvicorn for debugging (optional)
