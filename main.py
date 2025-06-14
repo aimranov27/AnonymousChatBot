@@ -165,36 +165,6 @@ async def on_shutdown():
     
     logger.info("Bot shutdown complete")
 
-# Health check endpoint
-@app.get("/health")
-async def health_check():
-    try:
-        if not is_ready:
-            return JSONResponse(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                content={"status": "not_ready", "reason": "Bot is still initializing"}
-            )
-        
-        # Check if bot is still working by making a simple API call
-        if bot:
-            try:
-                await bot.get_me()
-                return {"status": "healthy", "bot_ready": is_ready}
-            except Exception as e:
-                logger.error(f"Bot health check failed: {e}")
-                return JSONResponse(
-                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                    content={"status": "unhealthy", "reason": "Bot API connection failed"}
-                )
-            
-        return {"status": "healthy", "bot_ready": is_ready}
-    except Exception as e:
-        logger.error(f"Health check failed: {e}")
-        return JSONResponse(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            content={"status": "unhealthy", "reason": str(e)}
-        )
-
 # Webhook endpoint
 @app.post("/webhook")
 async def telegram_webhook(request: Request):
