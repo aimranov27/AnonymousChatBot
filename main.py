@@ -7,6 +7,7 @@ import asyncio
 from datetime import datetime
 from typing import Optional, Set
 from contextlib import asynccontextmanager
+import aiohttp
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -132,9 +133,13 @@ async def on_shutdown():
             logger.info("FSM storage closed")
             
             # Close all client sessions
-            if hasattr(dp, 'bot') and dp.bot and dp.bot.session:
-                await dp.bot.session.close()
-                logger.info("Bot session closed")
+            if hasattr(dp, 'bot') and dp.bot:
+                if hasattr(dp.bot, 'session') and dp.bot.session:
+                    await dp.bot.session.close()
+                    logger.info("Bot session closed")
+                if hasattr(dp.bot, '_session') and dp.bot._session:
+                    await dp.bot._session.close()
+                    logger.info("Bot internal session closed")
         except Exception as e:
             logger.error(f"Error closing FSM storage: {e}")
     
@@ -149,17 +154,41 @@ async def on_shutdown():
         except Exception as e:
             logger.error(f"Error cancelling task: {e}")
     
+    # Ensure all aiohttp sessions are closed
+    for task in asyncio.all_tasks():
+        if hasattr(task, 'session') and isinstance(task.session, aiohttp.ClientSession):
+            try:
+                await task.session.close()
+                logger.info("Closed aiohttp client session")
+            except Exception as e:
+                logger.error(f"Error closing aiohttp session: {e}")
+    
     logger.info("Bot shutdown complete")
 
 # Health check endpoint
 @app.get("/health")
 async def health_check():
-    if not is_ready:
+    try:
+        if not is_ready:
+            return JSONResponse(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                content={"status": "not_ready", "reason": "Bot is still initializing"}
+            )
+        
+        # Check if bot is still connected
+        if bot and not bot.is_connected():
+            return JSONResponse(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                content={"status": "unhealthy", "reason": "Bot is disconnected"}
+            )
+            
+        return {"status": "healthy", "bot_ready": is_ready}
+    except Exception as e:
+        logger.error(f"Health check failed: {e}")
         return JSONResponse(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            content={"status": "not_ready"}
+            content={"status": "unhealthy", "reason": str(e)}
         )
-    return {"status": "healthy"}
 
 # Webhook endpoint
 @app.post("/webhook")
