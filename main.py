@@ -1,5 +1,6 @@
 """Main file for the bot (Webhook version)"""
 import os
+import sys
 import time
 import signal
 import logging
@@ -114,7 +115,7 @@ handlers.setup(dp)
 
 # Set webhook
 webhook_url = f"https://{config.bot.domain}/webhook"
-bot.set_webhook(
+asyncio.create_task(bot.set_webhook(
     webhook_url,
     allowed_updates=[
         "message",
@@ -125,7 +126,7 @@ bot.set_webhook(
         "pre_checkout_query",
         "successful_payment"
     ]
-)
+))
 logger.info(f"Webhook set: {webhook_url}")
 
 is_ready = True
