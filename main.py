@@ -85,53 +85,61 @@ def handle_sigterm(*_):
 # Register signal handlers
 signal.signal(signal.SIGTERM, handle_sigterm)
 
-# Initialize bot and dispatcher
-config = load_config()
-os.environ['TZ'] = config.bot.timezone
-time.tzset()
-logger.info(f'Set timezone to "{config.bot.timezone}"')
+async def init_bot():
+    """Initialize bot and dispatcher"""
+    global bot, dp, sessionmaker, payment, is_ready
+    
+    config = load_config()
+    os.environ['TZ'] = config.bot.timezone
+    time.tzset()
+    logger.info(f'Set timezone to "{config.bot.timezone}"')
 
-# Setup storage
-if config.bot.use_redis:
-    storage = RedisStorage.from_url(
-        f'redis://{config.redis.host}:6379/{config.redis.db}'
+    # Setup storage
+    if config.bot.use_redis:
+        storage = RedisStorage.from_url(
+            f'redis://{config.redis.host}:6379/{config.redis.db}'
+        )
+    else:
+        storage = MemoryStorage()
+
+    # Create sessionmaker
+    sessionmaker = await create_sessionmaker(config.db)
+
+    bot = Bot(
+        token=config.bot.token,
+        parse_mode="HTML",
     )
-else:
-    storage = MemoryStorage()
 
-# Create sessionmaker
-sessionmaker = asyncio.create_task(create_sessionmaker(config.db))
+    payment = payments.TelegramStars(bot)
 
-bot = Bot(
-    token=config.bot.token,
-    parse_mode="HTML",
-)
+    dp = Dispatcher(storage=storage)
+    dp["config"] = config  # Store config in dispatcher context
+    middlewares.setup(dp, sessionmaker, payment)
+    handlers.setup(dp)
 
-payment = payments.TelegramStars(bot)
+    # Set webhook
+    webhook_url = f"https://{config.bot.domain}/webhook"
+    await bot.set_webhook(
+        webhook_url,
+        allowed_updates=[
+            "message",
+            "edited_message",
+            "callback_query",
+            "message_reaction",
+            "message_reaction_count",
+            "pre_checkout_query",
+            "successful_payment"
+        ]
+    )
+    logger.info(f"Webhook set: {webhook_url}")
 
-dp = Dispatcher(storage=storage)
-dp["config"] = config  # Store config in dispatcher context
-middlewares.setup(dp, sessionmaker, payment)
-handlers.setup(dp)
+    is_ready = True
+    logger.info("Bot startup complete and ready to handle requests")
 
-# Set webhook
-webhook_url = f"https://{config.bot.domain}/webhook"
-asyncio.create_task(bot.set_webhook(
-    webhook_url,
-    allowed_updates=[
-        "message",
-        "edited_message",
-        "callback_query",
-        "message_reaction",
-        "message_reaction_count",
-        "pre_checkout_query",
-        "successful_payment"
-    ]
-))
-logger.info(f"Webhook set: {webhook_url}")
-
-is_ready = True
-logger.info("Bot startup complete and ready to handle requests")
+# Initialize bot on startup
+@app.on_event("startup")
+async def startup_event():
+    await init_bot()
 
 # Webhook endpoint
 @app.post("/webhook")
