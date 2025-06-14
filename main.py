@@ -3,6 +3,7 @@ import os
 import time
 import signal
 import logging
+import asyncio
 from datetime import datetime
 
 from aiogram import Bot, Dispatcher, types
@@ -32,10 +33,52 @@ sessionmaker = None
 payment = None
 is_ready = False
 
+async def cleanup():
+    """Cleanup function to close all sessions and connections"""
+    global bot, dp, is_ready
+    is_ready = False
+    
+    logger.info("Starting cleanup...")
+    
+    if bot:
+        try:
+            # Close bot session
+            if hasattr(bot, 'session') and not bot.session.closed:
+                await bot.session.close()
+            if hasattr(bot, '_session') and not bot._session.closed:
+                await bot._session.close()
+            # Remove webhook
+            await bot.delete_webhook()
+            logger.info("Bot webhook removed")
+        except Exception as e:
+            logger.error(f"Error during bot cleanup: {e}")
+    
+    if dp:
+        try:
+            # Close FSM storage
+            await dp.fsm.storage.close()
+            logger.info("FSM storage closed")
+        except Exception as e:
+            logger.error(f"Error closing FSM storage: {e}")
+    
+    # Close all pending tasks
+    tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
+    for task in tasks:
+        task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
+        except Exception as e:
+            logger.error(f"Error cancelling task: {e}")
+    
+    logger.info("Cleanup complete")
+
 # Signal handlers
 def handle_sigterm(*_):
     """Handle SIGTERM signal"""
     logger.info("Received SIGTERM signal")
+    asyncio.create_task(cleanup())
     sys.exit(0)
 
 # Register signal handlers
