@@ -92,10 +92,23 @@ async def on_shutdown():
     global is_ready
     is_ready = False
     
+    logger.info("Starting bot shutdown...")
+    
     if bot:
+        # Close bot session
+        await bot.session.close()
+        # Remove webhook
         await bot.delete_webhook()
+        logger.info("Bot webhook removed")
+    
     if dp:
+        # Close FSM storage
         await dp.fsm.storage.close()
+        # Close all client sessions
+        for session in dp._client_sessions:
+            await session.close()
+        logger.info("All client sessions closed")
+    
     logger.info("Bot shutdown complete")
 
 # FastAPI events
