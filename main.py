@@ -79,8 +79,9 @@ async def cleanup():
 def handle_sigterm(*_):
     """Handle SIGTERM signal"""
     logger.info("Received SIGTERM signal")
-    asyncio.create_task(cleanup())
-    sys.exit(0)
+    loop = asyncio.get_event_loop()
+    loop.create_task(cleanup())
+    loop.stop()
 
 # Register signal handlers
 signal.signal(signal.SIGTERM, handle_sigterm)
@@ -140,6 +141,11 @@ async def init_bot():
 @app.on_event("startup")
 async def startup_event():
     await init_bot()
+
+# Cleanup on shutdown
+@app.on_event("shutdown")
+async def shutdown_event():
+    await cleanup()
 
 # Webhook endpoint
 @app.post("/webhook")
