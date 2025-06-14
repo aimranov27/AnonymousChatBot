@@ -99,7 +99,8 @@ if config.bot.use_redis:
 else:
     storage = MemoryStorage()
 
-sessionmaker = create_sessionmaker(config.db)
+# Create sessionmaker
+sessionmaker = asyncio.create_task(create_sessionmaker(config.db))
 
 bot = Bot(
     token=config.bot.token,
