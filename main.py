@@ -1,9 +1,12 @@
 """Main file for the bot (Webhook version)"""
 import os
 import time
+import signal
 import logging
+import asyncio
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Set
+from contextlib import asynccontextmanager
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -31,6 +34,25 @@ dp: Optional[Dispatcher] = None
 sessionmaker = None
 payment = None
 is_ready = False
+client_sessions: Set[asyncio.Task] = set()
+
+# Signal handlers
+def handle_sigterm(*_):
+    """Handle SIGTERM signal"""
+    logger.info("Received SIGTERM signal")
+    asyncio.create_task(on_shutdown())
+
+# Register signal handlers
+signal.signal(signal.SIGTERM, handle_sigterm)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan context manager for FastAPI"""
+    await on_startup()
+    yield
+    await on_shutdown()
+
+app = FastAPI(lifespan=lifespan)
 
 # Main initialization function
 async def on_startup():
@@ -86,7 +108,6 @@ async def on_startup():
     is_ready = True
     logger.info("Bot startup complete and ready to handle requests")
 
-
 # Shutdown cleanup
 async def on_shutdown():
     global is_ready
@@ -95,30 +116,33 @@ async def on_shutdown():
     logger.info("Starting bot shutdown...")
     
     if bot:
-        # Close bot session
-        await bot.session.close()
-        # Remove webhook
-        await bot.delete_webhook()
-        logger.info("Bot webhook removed")
+        try:
+            # Close bot session
+            await bot.session.close()
+            # Remove webhook
+            await bot.delete_webhook()
+            logger.info("Bot webhook removed")
+        except Exception as e:
+            logger.error(f"Error during bot shutdown: {e}")
     
     if dp:
-        # Close FSM storage
-        await dp.fsm.storage.close()
-        # Close all client sessions
-        for session in dp._client_sessions:
-            await session.close()
-        logger.info("All client sessions closed")
+        try:
+            # Close FSM storage
+            await dp.fsm.storage.close()
+            logger.info("FSM storage closed")
+        except Exception as e:
+            logger.error(f"Error closing FSM storage: {e}")
+    
+    # Close all pending tasks
+    for task in asyncio.all_tasks():
+        if not task.done():
+            task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
     
     logger.info("Bot shutdown complete")
-
-# FastAPI events
-@app.on_event("startup")
-async def startup_event():
-    await on_startup()
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    await on_shutdown()
 
 # Health check endpoint
 @app.get("/health")
