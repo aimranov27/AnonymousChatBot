@@ -175,12 +175,17 @@ async def health_check():
                 content={"status": "not_ready", "reason": "Bot is still initializing"}
             )
         
-        # Check if bot is still connected
-        if bot and not bot.is_connected():
-            return JSONResponse(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                content={"status": "unhealthy", "reason": "Bot is disconnected"}
-            )
+        # Check if bot is still working by making a simple API call
+        if bot:
+            try:
+                await bot.get_me()
+                return {"status": "healthy", "bot_ready": is_ready}
+            except Exception as e:
+                logger.error(f"Bot health check failed: {e}")
+                return JSONResponse(
+                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    content={"status": "unhealthy", "reason": "Bot API connection failed"}
+                )
             
         return {"status": "healthy", "bot_ready": is_ready}
     except Exception as e:
