@@ -3,12 +3,14 @@ import os
 import time
 import logging
 from datetime import datetime
+from typing import Optional
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.storage.redis import RedisStorage
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response, status
+from fastapi.responses import JSONResponse
 
 from app import middlewares, handlers
 from app.database import create_sessionmaker
@@ -24,14 +26,15 @@ logger = logging.getLogger(__name__)
 
 # App & global variables
 app = FastAPI()
-bot = None
-dp = None
+bot: Optional[Bot] = None
+dp: Optional[Dispatcher] = None
 sessionmaker = None
 payment = None
+is_ready = False
 
 # Main initialization function
 async def on_startup():
-    global bot, dp, sessionmaker, payment
+    global bot, dp, sessionmaker, payment, is_ready
 
     logger.info("Starting bot...")
     config = load_config()
@@ -68,12 +71,20 @@ async def on_startup():
     webhook_url = f"https://{config.bot.domain}/webhook"
     await bot.set_webhook(webhook_url)
     logger.info(f"Webhook set: {webhook_url}")
+    
+    is_ready = True
+    logger.info("Bot startup complete and ready to handle requests")
 
 
 # Shutdown cleanup
 async def on_shutdown():
-    await bot.delete_webhook()
-    await dp.fsm.storage.close()
+    global is_ready
+    is_ready = False
+    
+    if bot:
+        await bot.delete_webhook()
+    if dp:
+        await dp.fsm.storage.close()
     logger.info("Bot shutdown complete")
 
 # FastAPI events
@@ -85,9 +96,26 @@ async def startup_event():
 async def shutdown_event():
     await on_shutdown()
 
+# Health check endpoint
+@app.get("/health")
+async def health_check():
+    if not is_ready:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={"status": "not_ready"}
+        )
+    return {"status": "healthy"}
+
 # Webhook endpoint
 @app.post("/webhook")
 async def telegram_webhook(request: Request):
+    if not is_ready:
+        logger.warning("Received webhook request while bot is not ready")
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={"status": "not_ready"}
+        )
+        
     start_time = time.time()
     request_id = f"{datetime.now().strftime('%Y%m%d%H%M%S')}-{int(start_time * 1000)}"
     logger.info(f"[{request_id}] Webhook request received at {datetime.now().isoformat()}")
