@@ -42,6 +42,7 @@ async def create_stars_payment(call: types.CallbackQuery, payment: TelegramStars
 
         item = VIP_OPTIONS[item_id]
         logger.info(f"Creating payment for item: {item_id}, user: {call.from_user.id}")
+        logger.info(f"Payment details: days={item['days']}, stars={item['starPrice']}")
 
         await payment.create_payment(
             chat_id=call.message.chat.id,
@@ -50,6 +51,7 @@ async def create_stars_payment(call: types.CallbackQuery, payment: TelegramStars
             payload=f"vip:{item_id}",
             amount=int(item['starPrice']),
         )
+        logger.info(f"Payment created successfully for user {call.from_user.id}")
         await call.message.delete()
     except ValueError as e:
         logger.error(f"Invalid payment parameters: {str(e)}")
@@ -63,9 +65,13 @@ async def pre_checkout_query(pre_checkout_query: types.PreCheckoutQuery, payment
     """Handle pre-checkout query"""
     logger.info(f"[PRE_CHECKOUT] Received pre_checkout_query: {pre_checkout_query}")
     logger.info(f"[PRE_CHECKOUT] Payment payload: {pre_checkout_query.invoice_payload}")
+    logger.info(f"[PRE_CHECKOUT] User: {pre_checkout_query.from_user.id}")
+    logger.info(f"[PRE_CHECKOUT] Amount: {pre_checkout_query.total_amount}")
+    
     try:
         # Verify the payment payload
         if not pre_checkout_query.invoice_payload.startswith("vip:"):
+            logger.error(f"Invalid payment payload: {pre_checkout_query.invoice_payload}")
             await pre_checkout_query.answer(
                 ok=False,
                 error_message="Yanlış ödəniş yükü. Yenidən cəhd edin."
@@ -75,6 +81,7 @@ async def pre_checkout_query(pre_checkout_query: types.PreCheckoutQuery, payment
         # Verify the item exists
         item_id = pre_checkout_query.invoice_payload.split(':')[1]
         if item_id not in VIP_OPTIONS:
+            logger.error(f"Invalid item_id in pre-checkout: {item_id}")
             await pre_checkout_query.answer(
                 ok=False,
                 error_message="Yanlış abunə seçimi. Yenidən cəhd edin."
@@ -82,9 +89,10 @@ async def pre_checkout_query(pre_checkout_query: types.PreCheckoutQuery, payment
             return
 
         # Accept the payment
+        logger.info(f"[PRE_CHECKOUT] Accepting payment for user {pre_checkout_query.from_user.id}")
         await pre_checkout_query.answer(ok=True)
     except Exception as e:
-        logger.error(f"Pre-checkout error: {str(e)}")
+        logger.error(f"Pre-checkout error: {str(e)}", exc_info=True)
         await pre_checkout_query.answer(
             ok=False,
             error_message="Ödəniş təsdiq edilməmişdir. Yenidən cəhd edin."
@@ -94,12 +102,16 @@ async def pre_checkout_query(pre_checkout_query: types.PreCheckoutQuery, payment
 async def successful_payment(message: types.Message, session: AsyncSession, payment: TelegramStars) -> None:
     """Handle successful payment"""
     try:
+        logger.info(f"[PAYMENT] Processing successful payment for user {message.from_user.id}")
+        logger.info(f"[PAYMENT] Payment details: {message.successful_payment}")
+        
         # Extract item_id from payload
         item_id = message.successful_payment.invoice_payload.split(':')[1]
         if item_id not in VIP_OPTIONS:
             raise ValueError(f"Invalid item_id: {item_id}")
 
         item = VIP_OPTIONS[item_id]
+        logger.info(f"[PAYMENT] Item details: {item}")
 
         # Get user
         user = await session.scalar(
@@ -111,6 +123,7 @@ async def successful_payment(message: types.Message, session: AsyncSession, paym
 
         # Add VIP
         user.add_vip(item['days'])
+        logger.info(f"[PAYMENT] Added {item['days']} days of VIP to user {user.id}")
 
         # Record payment
         session.add(
@@ -122,14 +135,16 @@ async def successful_payment(message: types.Message, session: AsyncSession, paym
             )
         )
         await session.commit()
+        logger.info(f"[PAYMENT] Payment recorded in database for user {user.id}")
 
         # Send confirmation
         await message.answer(
             f'<i>Təbrik edirik, siz {item["days"]} günlük VIP statusunu əldə etdiniz!</>',
             reply_markup=nav.reply.main_menu(user),
         )
+        logger.info(f"[PAYMENT] Confirmation sent to user {user.id}")
     except Exception as e:
-        logger.error(f"Ödənişin işlənmə xətası: {str(e)}")
+        logger.error(f"Ödənişin işlənmə xətası: {str(e)}", exc_info=True)
         await message.answer(
             "Uğursuz ödəniş. Dəstək xidməti ilə əlaqə saxlayın və kodu bildirin: " + 
             message.successful_payment.telegram_payment_charge_id
