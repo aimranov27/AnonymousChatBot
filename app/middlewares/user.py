@@ -56,6 +56,10 @@ class UserMiddleware(BaseMiddleware):
             return await handler(event, data)
 
         session: AsyncSession = data['session']
+        
+        # Get bot info and add it to data
+        bot_info = await data['bot'].me()
+        data['bot_info'] = bot_info
 
         user = await session.scalar(
             select(User)

@@ -6,6 +6,8 @@ from aiogram.filters import Text
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from typing import Optional
+
 from prices import VIP_OPTIONS
 from app.filters import IsVip
 from app.templates import texts
@@ -160,9 +162,11 @@ async def back_bill(call: types.CallbackQuery) -> None:
 
 
 async def referral(
-    call: types.CallbackQuery, user: User, bot_info: types.User,
+    call: types.CallbackQuery, user: User, bot_info: Optional[types.User] = None,
 ) -> None:
     """Referral"""
+    if bot_info is None:
+        bot_info = await call.bot.me()
     await call.message.edit_text(
         texts.user.REF % (
             user.invited,
