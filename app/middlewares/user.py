@@ -39,7 +39,7 @@ class UserMiddleware(BaseMiddleware):
         with suppress(TelegramAPIError):
             await bot.send_message(
                 referral.id,
-                '<i><b>По вашей ссылке перешло 3 человека. Вам начислена VIP-подписка 🥰</></>',
+                '<i><b>3 nəfər dəvət etdiniz. Təbriklər, siz VIP abunəlik qazandınız 🥰</></>',
             )
 
     async def __call__(
