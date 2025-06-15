@@ -140,7 +140,7 @@ async def queue(
     match = await session.scalar(stmt)
 
     if match:
-        return await create_dialogue(bot, session, user.id, match.id)
+        return await create_dialogue(bot, session, user.id, match.id, state)
 
     await session.execute(
         delete(Queue)
@@ -155,11 +155,14 @@ async def queue(
         )
     )
     await session.commit()
-    await bot.send_message(
+    
+    # Send message and store its ID in state
+    msg = await bot.send_message(
         user.id,
         texts.user.DIALOGUE_SEARCH,
         reply_markup=nav.reply.SEARCH_MENU,
     )
+    await state.update_data(search_message_id=msg.message_id)
 
 
 async def get_dialogue_id(session: AsyncSession) -> int:
@@ -175,10 +178,9 @@ async def get_dialogue_id(session: AsyncSession) -> int:
 
 async def create_dialogue(
     bot: Bot, session: AsyncSession, first: int, second: int,
-    friend: bool = False
+    friend: bool = False, state: Optional[FSMContext] = None
 ) -> None:
     """Create dialogue"""
-
     for user_id in (first, second):
         with suppress(TelegramAPIError):
             if friend:
@@ -187,8 +189,23 @@ async def create_dialogue(
                     texts.user.DIALOGUE_FRIEND,
                     reply_markup=nav.reply.DIALOGUE_FRIEND_MENU,
                 )
-
             else:
+                # If we have state data, try to edit the existing message
+                if state and user_id == first:
+                    state_data = await state.get_data()
+                    if search_msg_id := state_data.get('search_message_id'):
+                        try:
+                            await bot.edit_message_text(
+                                texts.user.DIALOGUE_FOUND,
+                                user_id,
+                                search_msg_id,
+                                reply_markup=types.ReplyKeyboardRemove(),
+                            )
+                            continue
+                        except TelegramAPIError:
+                            pass
+                
+                # Fallback to sending new message if editing fails
                 await bot.send_message(
                     user_id,
                     texts.user.DIALOGUE_FOUND,
