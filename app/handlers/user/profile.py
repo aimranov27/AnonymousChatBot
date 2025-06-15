@@ -1,5 +1,6 @@
 """Profile handlers"""
 from contextlib import suppress
+from datetime import datetime
 
 from aiogram import Router, types
 from aiogram.filters import Command, Text, StateFilter
@@ -16,12 +17,17 @@ from app.utils.text import escape
 
 async def show_profile(message: types.Message, user: User) -> None:
     """Show profile handler"""
+    vip_status = 'yox'
+    if user.is_vip:
+        remaining_days = (user.vip_time - datetime.now()).days
+        vip_status = f'var ({remaining_days} gün qalıb)'
+    
     await message.answer(
         texts.user.PROFILE % (
             escape(message.from_user.full_name),
             ('Kişi' if user.is_man else 'Qadın'),
             user.age,
-            ('var' if user.is_vip else 'yox')
+            vip_status
         ),
         reply_markup=nav.inline.PROFILE,
     )
