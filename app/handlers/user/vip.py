@@ -13,7 +13,7 @@ from app.filters import IsVip
 from app.templates import texts
 from app.templates.keyboards import user as nav
 from app.utils.payments import TelegramStars
-from app.database.models import User, Bill
+from app.database.models import User, Bill, Referral
 
 
 logger = logging.getLogger('vip')
@@ -162,11 +162,31 @@ async def back_bill(call: types.CallbackQuery) -> None:
 
 
 async def referral(
-    call: types.CallbackQuery, user: User, bot_info: Optional[types.User] = None,
+    call: types.CallbackQuery, 
+    session: AsyncSession,
+    user: User, 
+    bot_info: Optional[types.User] = None,
 ) -> None:
     """Referral"""
     if bot_info is None:
         bot_info = await call.bot.me()
+
+    # Create referral record if it doesn't exist
+    if not user.ref:
+        user.ref = f"ref{user.id}"
+        await session.commit()
+
+    # Get or create referral record
+    referral = await session.scalar(
+        select(Referral)
+        .where(Referral.ref == user.ref)
+    )
+    
+    if not referral:
+        referral = Referral(ref=user.ref)
+        session.add(referral)
+        await session.commit()
+
     await call.message.edit_text(
         texts.user.REF % (
             user.invited,
