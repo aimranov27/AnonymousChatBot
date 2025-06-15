@@ -2,7 +2,7 @@
 
 import logging
 from aiogram import Router, types, F
-from aiogram.filters import Text
+from aiogram.filters import Text, Command
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -191,6 +191,7 @@ def register(router: Router) -> None:
     ), IsVip(False))
 
     router.message.register(vip_menu, Text('VIP 👑'))
+    router.message.register(vip_menu, Command('vip'))
     router.callback_query.register(vip_menu, Text('vip'))
     router.callback_query.register(create_stars_payment, Text(startswith='buy:stars'))
     router.callback_query.register(back_bill, Text('back:vip'))

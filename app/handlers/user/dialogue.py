@@ -585,6 +585,7 @@ async def next(
 def register(router: Router) -> None:
     """Register handlers"""
     router.message.register(random_normal, Text('Şans dialoqu 🔍'))
+    router.message.register(random_normal, Command('search'))
     router.message.register(male_normal, Text('K axtar 👨'))
     router.message.register(female_normal, Text('Q axtar 👩'))
     router.message.register(pre_adult, Text('18+ çat 🔞'))
