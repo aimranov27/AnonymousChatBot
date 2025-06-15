@@ -12,7 +12,6 @@ from app.templates import texts
 from app.templates.keyboards import user as nav
 from app.utils.payments import TelegramStars
 from app.database.models import User, Bill
-from aiogram.types import Bot
 
 
 logger = logging.getLogger('vip')
@@ -161,12 +160,9 @@ async def back_bill(call: types.CallbackQuery) -> None:
 
 
 async def referral(
-    call: types.CallbackQuery, 
-    user: User, 
-    bot: Bot,
+    call: types.CallbackQuery, user: User, bot_info: types.User,
 ) -> None:
     """Referral"""
-    bot_info = await bot.me()
     await call.message.edit_text(
         texts.user.REF % (
             user.invited,
