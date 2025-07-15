@@ -28,10 +28,10 @@ DEFAULT_VIP = 'Bu funksiya yalnız VIP istifadəçilər üçün əlçatandır'
 VIP = '''
 <b>👑 VIP statusun üstünlükləri:</>
 
-<i>🔎 - Cinslə axtarış
+<i>🔎 - Cinsəl axtarış
 🔞 - 18+ çat
 ❌ - Reklamsız
-🖼 - Media paylaşımı (şəkillər, videolar, giflər, stikerlər)</>
+🖼 - Media paylaşımı (şəkillər, videolar, giflər, stikerlər)</i>
 '''
 
 BILL = '''
@@ -41,16 +41,16 @@ BILL = '''
 '''
 
 REF = '''
-<i>Dəvət linkini dostlarınla bölüş və hər qoşulan üçüncü dostun üçün 1 günlük </> <b>👑 VIP statusu</> <i>qazan!</>
+<i>Dəvət linkini dostlarınla bölüş və hər qoşulan üçüncü dostun üçün 1 günlük </i> <b>👑 VIP statusu</b> <i>qazan!</i>
 
-<b>Dəvət olunub:</> <code>%i</>
+<b>Dəvət olunub:</> <code>%i</code>
 
 Sənin şəxsi dəvət linkin:
-👉  https://t.me/%s?start=%i
+👉  <code>https://t.me/%s?start=%i</code>
 '''
 
 PROFILE = '''
-<b>👤 Profil</>
+<b>👤 Profil</b>
 
 <b>💬 Ad -</b> %s
 <b>👫 Cins -</b> %s
@@ -59,37 +59,47 @@ PROFILE = '''
 '''
 
 SEARCH_END = '''
-<i>Axtarış dayandırıldı
-Növbəti həmsöhbəti tapmaq üçün - /next
+<i>Axtarış dayandırıldı</i>
+Növbəti həmsöhbəti tapmaq üçün - <i>/next</i>
+
+<code>https://t.me/meetbakubot</code>
 </>
 '''
 
 DIALOGUE_END_SELF = '''
 <i>Siz söhbəti bitirdiniz 🙄
-Növbəti həmsöhbəti tapmaq üçün - /next
-</>
+Növbəti həmsöhbəti tapmaq üçün - <i>/next</i>
+
+<code>https://t.me/meetbakubot</code>
+</i>
 '''
 
 DIALOGUE_END = '''
 <i>Qarşı tərəf sizinlə əlaqəni kəsdi 😞
-Növbəti həmsöhbəti tapmaq üçün - /next
+Növbəti həmsöhbəti tapmaq üçün - <i>/next</i>
+
+<code>https://t.me/meetbakubot</code>
+</i>
 </>
 '''
 DIALOGUE_SEARCH = '''
-<i>🔎 Həmsöhbət axtarılır...</>
+<i>🔎 Həmsöhbət axtarılır...</i>
 '''
 
 DIALOGUE_SEARCH_ALREADY_SEARCHING = '''
-<i>ℹ Həmsöhbət artıq axtarılır
-Axtarışı dayandırmaq üçün - /stop</>
+<i>🤔 Həmsöhbət artıq axtarılır
+Axtarışı dayandırmaq üçün - <i>/stop</i>
+</i>
 '''
 
-DIALOGUE_GENDER = '<i>Həmsöhbətin cinsini seçin! ❤️‍🔥</>'
+DIALOGUE_GENDER = '<i>Həmsöhbətin cinsini seçin! ❤️‍🔥</i>'
 DIALOGUE_FOUND = '''
-<b>Həmsöhbət tapıldı! 🎁</>
+<b>Həmsöhbət tapıldı! 🎁</b>
 
 <i>Növbəti həmsöhbəti tapmaq üçün - /next
-Çatı bitirmək üçün - /stop</>
+Çatı bitirmək üçün - /stop</i>
+
+<code>https://t.me/meetbakubot</code>
 '''
 DIALOGUE_FRIEND = '''
 <b>Диалог с другом создан! 👥 </>
@@ -175,7 +185,7 @@ JOIN_ROOM = '''
 '''
 
 DEFAULT_COMMAND_RESPONSE = '''
-<i>Həmsöhbət tapmaq üçün /search istifadə edin.</>
+<i>Həmsöhbət tapmaq üçün /search istifadə edin.</i>
 '''
 
 PRE_ROOM_CHANGE_NICKNAME = '''
