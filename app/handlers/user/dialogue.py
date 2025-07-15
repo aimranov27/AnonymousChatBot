@@ -237,6 +237,17 @@ async def finish_dialogue(
     session: AsyncSession, user: User
 ) -> None:
     """Finish dialogue"""
+    # Check if user is in a dialogue or in queue
+    is_in_queue = await session.scalar(
+        select(Queue).where(Queue.id == user.id)
+    )
+    
+    if not user.partner and not is_in_queue:
+        return await message.answer(
+            texts.user.NO_ACTIVE_CHAT,
+            reply_markup=nav.reply.main_menu(user),
+        )
+        
     await message.answer(
         texts.user.DIALOGUE_END_SELF if user.partner else texts.user.SEARCH_END,
         reply_markup=nav.reply.main_menu(user),
@@ -582,6 +593,21 @@ async def next(
     )
 
 
+async def handle_default_command(
+    message: types.Message, bot: Bot, session: AsyncSession, user: User
+) -> None:
+    """Handle default commands or random messages"""
+    # If user is in a dialogue, forward the message (already handled by InDialogue filter)
+    if user.partner:
+        return
+        
+    # If user is not in a dialogue, show a default message
+    await message.answer(
+        texts.user.DEFAULT_COMMAND_RESPONSE,
+        reply_markup=nav.reply.main_menu(user),
+    )
+
+
 def register(router: Router) -> None:
     """Register handlers"""
     router.message.register(random_normal, Text('Şans dialoqu 🔍'))
@@ -609,3 +635,6 @@ def register(router: Router) -> None:
         decline_complaint, Text('decline:complaint')
     )
     router.message.register(forward_message, InDialogue())
+    
+    # Handle unrecognized commands or random messages (as fallback)
+    router.message.register(handle_default_command)

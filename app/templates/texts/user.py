@@ -91,6 +91,12 @@ DIALOGUE_FRIEND = '''
 <i>Для прекращения диалога - /stop</>
 '''
 BANNED = '<b>⛔️ Sizin hesab bloklanmışdır.</>'
+
+NO_ACTIVE_CHAT = '''
+<i>Sizin aktiv çatınız yoxdur 🤔
+Yeni çat başlatmaq üçün - /search</>
+'''
+
 PRE_SHOW_CONTACTS = '''
 <b>📱 Показать контакты</>
 
@@ -155,11 +161,15 @@ COMPLAINT = '''
 
 JOIN_ROOM = '''
 <b>🏠 Вход в комнату [%s]</>
-<b>👤 Никнейм:</b> %s
+<b>👤 Никнейм:</b> %s
 <b>👤 Участников:</b> %s
 
 <i>/leave - покинуть комнату 🚪</>
 <i>/members - посмотреть участников 👤</>
+'''
+
+DEFAULT_COMMAND_RESPONSE = '''
+<i>Həmsöhbət tapmaq üçün /search istifadə edin.</>
 '''
 
 PRE_ROOM_CHANGE_NICKNAME = '''
