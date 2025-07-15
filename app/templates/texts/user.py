@@ -59,7 +59,8 @@ PROFILE = '''
 '''
 
 SEARCH_END = '''
-<i>Axtarış dayandırıldı<br><br>
+<i>Axtarış dayandırıldı
+
 Növbəti həmsöhbəti tapmaq üçün - /next
 
 <code>https://t.me/meetbakubot</code>
@@ -67,7 +68,8 @@ Növbəti həmsöhbəti tapmaq üçün - /next
 '''
 
 DIALOGUE_END_SELF = '''
-<i>Siz söhbəti bitirdiniz 🙄<br><br>
+<i>Siz söhbəti bitirdiniz 🙄
+
 Növbəti həmsöhbəti tapmaq üçün - /next
 
 <code>https://t.me/meetbakubot</code>
@@ -75,7 +77,8 @@ Növbəti həmsöhbəti tapmaq üçün - /next
 '''
 
 DIALOGUE_END = '''
-<i>Qarşı tərəf sizinlə əlaqəni kəsdi 😞<br><br>
+<i>Qarşı tərəf sizinlə əlaqəni kəsdi 😞
+
 Növbəti həmsöhbəti tapmaq üçün - /next
 
 <code>https://t.me/meetbakubot</code>
@@ -86,14 +89,15 @@ DIALOGUE_SEARCH = '''
 '''
 
 DIALOGUE_SEARCH_ALREADY_SEARCHING = '''
-<i>🤔 Həmsöhbət artıq axtarılır<br><br>
+<i>🤔 Həmsöhbət artıq axtarılır
+
 Axtarışı dayandırmaq üçün - /stop
 </i>
 '''
 
 DIALOGUE_GENDER = '<i>Həmsöhbətin cinsini seçin! ❤️‍🔥</i>'
 DIALOGUE_FOUND = '''
-<b>Həmsöhbət tapıldı! 🎁</b><br><br>
+<b>Həmsöhbət tapıldı! 🎁</b>
 
 <i>Növbəti həmsöhbəti tapmaq üçün - /next
 Çatı bitirmək üçün - /stop
