@@ -82,7 +82,6 @@ DIALOGUE_SEARCH = '''
 DIALOGUE_SEARCH_ALREADY_SEARCHING = '''
 <i>ℹ Həmsöhbət artıq axtarılır
 Axtarışı dayandırmaq üçün - /stop</>
-</>
 '''
 
 DIALOGUE_GENDER = '<i>Həmsöhbətin cinsini seçin! ❤️‍🔥</>'
