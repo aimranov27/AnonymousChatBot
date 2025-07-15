@@ -38,12 +38,9 @@ USER_MENU = ReplyKeyboardMarkup(
         [
             KeyboardButton(text='Şans dialoqu 🔍'),
         ],
-        [
+        [   
             KeyboardButton(text='Cinsəl axtarış ♂️'),
-        ],
-        [
             KeyboardButton(text='18+ çat 🔞'),
-            KeyboardButton(text='Profil 👤'),
         ],
         [
             # # KeyboardButton(text='Комнаты 🏠'),
