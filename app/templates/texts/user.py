@@ -59,16 +59,16 @@ PROFILE = '''
 '''
 
 SEARCH_END = '''
-<i>Axtarış dayandırıldı</i>
-Növbəti həmsöhbəti tapmaq üçün - <i>/next</i>
+<i>Axtarış dayandırıldı
+Növbəti həmsöhbəti tapmaq üçün - /next
 
 <code>https://t.me/meetbakubot</code>
-</>
+</i>
 '''
 
 DIALOGUE_END_SELF = '''
 <i>Siz söhbəti bitirdiniz 🙄
-Növbəti həmsöhbəti tapmaq üçün - <i>/next</i>
+Növbəti həmsöhbəti tapmaq üçün - /next
 
 <code>https://t.me/meetbakubot</code>
 </i>
@@ -76,11 +76,10 @@ Növbəti həmsöhbəti tapmaq üçün - <i>/next</i>
 
 DIALOGUE_END = '''
 <i>Qarşı tərəf sizinlə əlaqəni kəsdi 😞
-Növbəti həmsöhbəti tapmaq üçün - <i>/next</i>
+Növbəti həmsöhbəti tapmaq üçün - /next
 
 <code>https://t.me/meetbakubot</code>
 </i>
-</>
 '''
 DIALOGUE_SEARCH = '''
 <i>🔎 Həmsöhbət axtarılır...</i>
@@ -88,7 +87,7 @@ DIALOGUE_SEARCH = '''
 
 DIALOGUE_SEARCH_ALREADY_SEARCHING = '''
 <i>🤔 Həmsöhbət artıq axtarılır
-Axtarışı dayandırmaq üçün - <i>/stop</i>
+Axtarışı dayandırmaq üçün - /stop
 </i>
 '''
 
@@ -97,9 +96,10 @@ DIALOGUE_FOUND = '''
 <b>Həmsöhbət tapıldı! 🎁</b>
 
 <i>Növbəti həmsöhbəti tapmaq üçün - /next
-Çatı bitirmək üçün - /stop</i>
+Çatı bitirmək üçün - /stop
 
 <code>https://t.me/meetbakubot</code>
+</i>
 '''
 DIALOGUE_FRIEND = '''
 <b>Диалог с другом создан! 👥 </>
