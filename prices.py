@@ -3,7 +3,7 @@ VIP_OPTIONS = {
     'day': {
         'name': '1 gün - 30 ⭐ / 1 ₼',
         'price': 1,
-        'starPrice': 1,
+        'starPrice': 30,
         'days': 1,
     },
     'week': {
