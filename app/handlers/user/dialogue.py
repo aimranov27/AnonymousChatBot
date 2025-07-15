@@ -582,9 +582,24 @@ async def next(
     session: AsyncSession, user: User
 ) -> None:
     """Next"""
+    # Check if user is in an active dialogue
     if user.partner:
+        # End the current dialogue first
         await finish_dialogue(message, bot, state, session, user)
-
+        
+    # Check if the user is already in queue
+    is_in_queue = await session.scalar(
+        select(Queue).where(Queue.id == user.id)
+    )
+    
+    # If user is already in queue, inform them they're already searching
+    if is_in_queue:
+        return await message.answer(
+            texts.user.DIALOGUE_SEARCH_ALREADY_SEARCHING,
+            reply_markup=nav.reply.SEARCH_MENU,
+        )
+    
+    # Start a new search with previous preferences
     state_data = await state.get_data()
     await queue(
         bot, session, user, state=state,

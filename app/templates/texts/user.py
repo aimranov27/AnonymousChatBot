@@ -78,6 +78,13 @@ Növbəti həmsöhbəti tapmaq üçün - /next
 DIALOGUE_SEARCH = '''
 <i>🔎 Həmsöhbət axtarılır...</>
 '''
+
+DIALOGUE_SEARCH_ALREADY_SEARCHING = '''
+<i>ℹ Həmsöhbət artıq axtarılır
+Axtarışı dayandırmaq üçün - /stop</>
+</>
+'''
+
 DIALOGUE_GENDER = '<i>Həmsöhbətin cinsini seçin! ❤️‍🔥</>'
 DIALOGUE_FOUND = '''
 <b>Həmsöhbət tapıldı! 🎁</>
