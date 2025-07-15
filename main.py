@@ -133,6 +133,10 @@ async def init_bot():
         ]
     )
     logger.info(f"Webhook set: {webhook_url}")
+    
+    # Set bot commands
+    await set_commands(bot, config, sessionmaker)
+    logger.info("Bot commands set")
 
     is_ready = True
     logger.info("Bot startup complete and ready to handle requests")
