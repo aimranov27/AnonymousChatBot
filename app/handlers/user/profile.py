@@ -15,12 +15,22 @@ from app.database.models import User
 from app.utils.text import escape
 
 
+def get_vip_status(user: User) -> str:
+    """Calculate VIP status string with days remaining"""
+    if not user.is_vip:
+        return 'yox'
+        
+    time_remaining = user.vip_time - datetime.now()
+    remaining_days = time_remaining.days
+    # Show at least 1 day if there's any time remaining
+    if remaining_days == 0 and time_remaining.total_seconds() > 0:
+        remaining_days = 1
+    return f'var ({remaining_days} gün qalıb)'
+
+
 async def show_profile(message: types.Message, user: User) -> None:
     """Show profile handler"""
-    vip_status = 'yox'
-    if user.is_vip:
-        remaining_days = (user.vip_time - datetime.now()).days
-        vip_status = f'var ({remaining_days} gün qalıb)'
+    vip_status = get_vip_status(user)
     
     await message.answer(
         texts.user.PROFILE % (
@@ -68,12 +78,15 @@ async def edit_gender(
 
         await state.set_state('edit.age')
     else:
+        # Use the helper function to get VIP status
+        vip_status = get_vip_status(user)
+            
         await call.message.edit_text(
             texts.user.PROFILE % (
                 escape(call.from_user.full_name),
                 ('Kişi' if user.is_man else 'Qadın'),
                 user.age,
-                ('var' if user.is_vip else 'yox')
+                vip_status
             ),
             reply_markup=nav.inline.PROFILE,
         )
