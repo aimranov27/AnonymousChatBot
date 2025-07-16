@@ -21,14 +21,10 @@ VIP_MENU = ReplyKeyboardMarkup(
         ],
         [
             KeyboardButton(text='18+ çat 🔞'),
-            KeyboardButton(text='Profil 👤'),
         ],
         [
             # # KeyboardButton(text='Комнаты 🏠'),
             # KeyboardButton(text='Мои друзья 👥'),
-        ],
-        [
-            KeyboardButton(text='VIP 👑'),
         ],
     ],
     resize_keyboard=True,
